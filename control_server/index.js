@@ -22,6 +22,6 @@ wss.on('listening', () => {
    console.log('listening on 8080');
 })
 
-wss.on('close', (data) => {
+wss.on('error', (data) => {
    console.log('Client disconnected.')
 })
