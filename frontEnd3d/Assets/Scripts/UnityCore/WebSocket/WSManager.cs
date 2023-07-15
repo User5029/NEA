@@ -9,6 +9,7 @@ namespace UnityCore
     {
         public class WSManager : MonoBehaviour
         {
+            public static string websocketId = "002";
 
             // Public variables
             WebSocket ws;
@@ -18,7 +19,11 @@ namespace UnityCore
             // Private variables
             private bool reconnectWS = false;
 
-            // Logic for the normal functions in unity
+            /*
+             Logic for the normal functions in unity
+            */
+
+            //Runs at the start of the program.
             private void Start()
             {
                 Log("Loaded.");
@@ -28,10 +33,11 @@ namespace UnityCore
                 ws.OnOpen += (sender, e) =>
                 {
                     Log("Successfully connected to websocket.");
+                    ws.Send("001,"+websocketId+",REGISTER");
                     reconnectWS = false;
                 };
             }
-
+            // Run on every frame update.
             public void Update()
             {
                 if (ws.IsAlive == false)
@@ -44,6 +50,15 @@ namespace UnityCore
                     }
                 }
             }
+
+            //Runs when application stops
+            private void OnApplicationQuit()
+            {
+                ws.Send("001,"+websocketId+",CLOSE");
+                ws.CloseAsync();
+            }
+
+
 
             // Logic for the reconnecting of the websocket when it has been disconnected. 
             // Will retry every 5 seconds for a total of 5 times before giving an error.

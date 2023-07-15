@@ -10,28 +10,49 @@ namespace UnityCore
         public class WSManager : MonoBehaviour
         {
 
+            #region VARIABLES
+            public static string websocketId = "002";
+
             // Public variables
-            WebSocket ws;
+            public static WebSocket ws;
             public bool Developer;
             public string WebSocketURL = "localhost:8080";
 
             // Private variables
             private bool reconnectWS = false;
+            private bool connectedB4 = false;
 
-            // Logic for the normal functions in unity
+            #endregion
+            /*
+             Logic for the normal functions in unity
+            */
+            #region Unity Functions, inc. ws.OnMessage --> WSMessage() + WS.AsyncConnect()
+
+            //Runs at the start of the program.
             private void Start()
             {
                 Log("Loaded.");
                 reconnectWS = true;
                 ws = new WebSocket("ws://" + WebSocketURL);
-                StartCoroutine(ConnectLoop());
+                ReConnect(ws);
                 ws.OnOpen += (sender, e) =>
                 {
                     Log("Successfully connected to websocket.");
+                    if(connectedB4 == false){
+                        ws.Send("001,"+websocketId+",REGISTER");
+                        connectedB4 = true;
+                    } else {
+                        ws.Send("001,"+websocketId+",RECONNECT");
+                    }                    
                     reconnectWS = false;
                 };
-            }
 
+                ws.OnMessage += (sender, e) => {
+                    string message = e.Data;
+                    WSMessage(message);
+                };
+            }
+            // Run on every frame update.
             public void Update()
             {
                 if (ws.IsAlive == false)
@@ -39,68 +60,69 @@ namespace UnityCore
                     if (!reconnectWS)
                     {
                         LogWarn("Disconnected, trying to reconnect.");
-                        ReConnectLoopProxy();
+                        ReConnect(ws);
                         reconnectWS = true;
                     }
                 }
             }
 
-            // Logic for the reconnecting of the websocket when it has been disconnected. 
-            // Will retry every 5 seconds for a total of 5 times before giving an error.
-
-            private void ReConnectLoopProxy()
+            //Runs when application stops
+            private void OnApplicationQuit()
             {
-                StartCoroutine(ReConnectLoop());
+                ws.Send("001,"+websocketId+",CLOSE");
+                Log("Connection closed due to applicationQuit.");
+                ws.CloseAsync();
             }
 
-            //Variables for ReConnect
-            private bool ReConnect_loop = true;
-            private int ReConnect_int = 0;
-            private int CheckCounter = 0;
-            private IEnumerator ReConnectLoop()
+            #endregion
+            // Logic for the connecting/reconnecting of the websocket when it has been disconnected.  
+            #region Connection to the websocket 
+
+            public static void ReConnect(WebSocket _ws)
             {
-                ReConnect_int = 0;
-                ReConnect_loop = true;
-                while (ReConnect_loop)
-                {
-                    if (ws.IsAlive)
-                    {
-                        yield return true;
-                        reconnectWS = false;
-                        ReConnect_loop = false;
-                        CheckCounter++;
-                    }
-                    Log("Reconnect Attempt: " + ReConnect_int);
-                    ws.ConnectAsync();
-                    yield return new WaitForSeconds(0.5f);
-                    ReConnect_int++;
+                if(_ws.IsAlive) return;
+                _ws.ConnectAsync();
 
-                    if (ReConnect_int == 5)
-                    {
-                        ReConnect_loop = false;
-                    }
+            }
 
-                    Log("(check counter) " + CheckCounter);
+            #endregion
+            //Handling messages to/from the websocket.
+            #region Message Handling
+            public void WSMessage(string _message)
+            {
+                string[] cmd = _message.Split(char.Parse(","));
 
+                switch (cmd[2]){
+                    case "STATUS":
+                        Status(cmd);
+                        break;
+                    case "AUDIO":
+                        Audio(cmd);
+                        break;
                 }
-
-                if (ReConnect_int >= 5)
-                {
-                    LogError("Unable to connect to WebSocket.");
-                }
-                StopCoroutine(ConnectLoop());
             }
 
-            private IEnumerator ConnectLoop()
+            public void Status(string[] _cmd)
             {
-                ws.ConnectAsync();
-                yield return new WaitForSeconds(1);
+                // Get the status and resend for all the audio managers.
+                /*
+                cmd[3] = request / send --> ignore "send"
+                cmd[3] - subCommand cmd[4] - audio channel
+                */
+            }
+
+            public void Audio(string[] _cmd)
+            {
+                //Control the audio requests from other apps.
+                /*
+                cmd[3] - subcommand cmd[4] - channel cmd[5...] - data per audio.
+                */
             }
 
 
-
-
-
+            #endregion
+            // Debug Stuff
+            #region DEBUG
             private void Log(string _msg)
             {
                 if (!Developer)
@@ -125,6 +147,7 @@ namespace UnityCore
                 }
                 Debug.LogError("[WSManager] - " + _msg);
             }
+            #endregion
         }
     }
 }

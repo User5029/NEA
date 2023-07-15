@@ -29,7 +29,7 @@ public class cubes : MonoBehaviour
         for(int i=0; i<512; i++)
         {
             if(_sampleCube != null){
-                _sampleCube[i].transform.localScale = new UnityEngine.Vector3(10, (AudioPeer._samples[i] * _maxScale) +2, 10);
+                _sampleCube[i].transform.localScale = new UnityEngine.Vector3(0.25f, (AudioPeer._samples[i] * _maxScale) +2, 0.25f);
             }
         }        
     }
