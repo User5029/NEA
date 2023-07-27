@@ -10,6 +10,8 @@ namespace UnityCore
         public class WSManager : MonoBehaviour
         {
 
+            public static WSManager instance;
+
             #region VARIABLES
             public static string websocketId = "002";
 
@@ -29,6 +31,14 @@ namespace UnityCore
             #region Unity Functions, inc. ws.OnMessage --> WSMessage() + WS.AsyncConnect()
 
             //Runs at the start of the program.
+
+            private void Awake() {
+                GameObject[] wsObject = GameObject.FindGameObjectsWithTag("WSManager");
+                if( wsObject.Length > 1){
+                    Destroy(this.gameObject);
+                }
+                //DontDestroyOnLoad(this.gameObject);
+            }
             private void Start()
             {
                 Log("Loaded.");
