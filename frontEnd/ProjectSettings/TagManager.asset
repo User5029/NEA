@@ -7,6 +7,8 @@ TagManager:
   - Manager
   - WSManager
   - AudManager
+  - audio1
+  - audio2
   layers:
   - Default
   - TransparentFX

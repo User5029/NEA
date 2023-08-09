@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using WebSocketSharp;
 using System.Collections;
+using UnityCore.Audio;
 
 namespace UnityCore
 {
@@ -32,12 +33,14 @@ namespace UnityCore
 
             //Runs at the start of the program.
 
-            private void Awake() {
+            private void Awake()
+            {
                 GameObject[] wsObject = GameObject.FindGameObjectsWithTag("WSManager");
-                if( wsObject.Length > 1){
+                if (wsObject.Length > 1)
+                {
                     Destroy(this.gameObject);
                 }
-                //DontDestroyOnLoad(this.gameObject);
+                DontDestroyOnLoad(this.gameObject);
             }
             private void Start()
             {
@@ -48,16 +51,20 @@ namespace UnityCore
                 ws.OnOpen += (sender, e) =>
                 {
                     Log("Successfully connected to websocket.");
-                    if(connectedB4 == false){
-                        ws.Send("001,"+websocketId+",REGISTER");
+                    if (connectedB4 == false)
+                    {
+                        ws.Send("001," + websocketId + ",REGISTER");
                         connectedB4 = true;
-                    } else {
-                        ws.Send("001,"+websocketId+",RECONNECT");
-                    }                    
+                    }
+                    else
+                    {
+                        ws.Send("001," + websocketId + ",RECONNECT");
+                    }
                     reconnectWS = false;
                 };
 
-                ws.OnMessage += (sender, e) => {
+                ws.OnMessage += (sender, e) =>
+                {
                     string message = e.Data;
                     WSMessage(message);
                 };
@@ -79,7 +86,7 @@ namespace UnityCore
             //Runs when application stops
             private void OnApplicationQuit()
             {
-                ws.Send("001,"+websocketId+",CLOSE");
+                ws.Send("001," + websocketId + ",CLOSE");
                 Log("Connection closed due to applicationQuit.");
                 ws.CloseAsync();
             }
@@ -90,9 +97,8 @@ namespace UnityCore
 
             public static void ReConnect(WebSocket _ws)
             {
-                if(_ws.IsAlive) return;
+                if (_ws.IsAlive) return;
                 _ws.ConnectAsync();
-
             }
 
             #endregion
@@ -100,14 +106,29 @@ namespace UnityCore
             #region Message Handling
             public void WSMessage(string _message)
             {
-                string[] cmd = _message.Split(char.Parse(","));
+                // Parse message into an array
+                string[] cmd = _message.ToUpper().Split(char.Parse(","));
 
-                switch (cmd[2]){
+                // Check to see if this should receive the message
+                // websocketId = this device (defined above), 000 = general broadcast
+                if (cmd[0] != websocketId && cmd[0] != "000") return;
+
+                // check to see if its from the control server
+                if (cmd[0] != "001") return;
+
+                // All of the main commands
+                // Some are not implemented yet but will be here for the future.
+                switch (cmd[2])
+                {
                     case "STATUS":
                         Status(cmd);
                         break;
                     case "AUDIO":
                         Audio(cmd);
+                        break;
+                    case "CUEREQ":
+                        break;
+                    case "NOTES":
                         break;
                 }
             }
@@ -123,10 +144,37 @@ namespace UnityCore
 
             public void Audio(string[] _cmd)
             {
-                //Control the audio requests from other apps.
-                /*
-                cmd[3] - subcommand cmd[4] - channel cmd[5...] - data per audio.
-                */
+                if (_cmd[4] != "1" && _cmd[4] != "2" && _cmd[4] != "ALL") return;
+                switch (_cmd[3])
+                {
+                    case "DISARM":
+                        AudioManager.Disarm(_cmd);
+                        break;
+
+                    case "PLAY":
+                        AudioManager.Play(_cmd);
+                        break;
+
+                    case "FADEIN":
+                        AudioManager.FadeIn(_cmd);
+                        break;
+
+                    case "FADEOUT":
+                        AudioManager.FadeOut(_cmd);
+                        break;
+
+                    case "REDUCE":
+                        AudioManager.Reduce(_cmd);
+                        break;
+
+                    case "NORMAL":
+                        AudioManager.Normal(_cmd);
+                        break;
+
+                    case "ARM":
+                        AudioManager.Arm(_cmd);
+                        break;
+                }
             }
 
 
