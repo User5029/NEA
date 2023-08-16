@@ -40,14 +40,22 @@ namespace UnityCore
                 {
                     Destroy(this.gameObject);
                 }
+                else
+                {
+                    instance = this;
+                }
                 DontDestroyOnLoad(this.gameObject);
+
+                ws = new WebSocket("ws://" + WebSocketURL);
+                ws.Connect();
+                Log("Successfully connected to websocket.");
+                ws.Send("001," + websocketId + ",REGISTER");
+                connectedB4 = true;
             }
             private void Start()
             {
+                ws.Connect();
                 Log("Loaded.");
-                reconnectWS = true;
-                ws = new WebSocket("ws://" + WebSocketURL);
-                ReConnect(ws);
                 ws.OnOpen += (sender, e) =>
                 {
                     Log("Successfully connected to websocket.");
@@ -142,6 +150,12 @@ namespace UnityCore
                 */
             }
 
+            public static void Send_Status(string audioNum, string State, string Substate)
+            {
+                Debug.Log("001," + websocketId + ",STATUS,SEND," + audioNum + "," + State + "," + Substate);
+                ws.Send("001," + websocketId + ",STATUS,SEND," + audioNum + "," + State + "," + Substate);
+            }
+
             public void Audio(string[] _cmd)
             {
                 if (_cmd[4] != "1" && _cmd[4] != "2" && _cmd[4] != "ALL") return;
@@ -153,6 +167,10 @@ namespace UnityCore
 
                     case "PLAY":
                         AudioManager.Play(_cmd);
+                        break;
+
+                    case "STOP":
+                        AudioManager.Stop(_cmd);
                         break;
 
                     case "FADEIN":
@@ -187,6 +205,10 @@ namespace UnityCore
                 {
                     return;
                 }
+                Debug.Log("[WSManager] - " + _msg);
+            }
+            private void LogStatic(string _msg)
+            {
                 Debug.Log("[WSManager] - " + _msg);
             }
             private void LogWarn(string _msg)

@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
+using UnityCore.Sockets;
 
 
 namespace UnityCore
@@ -54,11 +55,17 @@ namespace UnityCore
             public static int Aud2_Cue = 0;
             public static string Aud2_Name = "None";
             public static int CurrentCue = 0;
+            public static int NextCue = 0;
 
             // Private Variables
             private string[] Aud1_Data;
             private string[] Aud2_Data;
 
+
+            private static int Aud1_FadeInNeeded = 0;
+            private static int Aud2_FadeInNeeded = 0;
+            private static int Aud1_FadeOutNeeded = 0;
+            private static int Aud2_FadeOutNeeded = 0;
 
             #endregion
 
@@ -89,18 +96,20 @@ namespace UnityCore
                     LogError("Error getting Audio Source #2");
                     return;
                 }
-
-                Disarm("0,1,2,3,ALL".Split(","));
             }
 
 
             private void Start()
             {
+                Disarm("0,1,2,3,ALL".Split(","));
                 Log("Setting Audio Sources to Manual.");
                 Aud1_State = AudioStates.Manual;
                 Aud2_State = AudioStates.Manual;
 
-                string msg = "to,from,audio,arm,1,1,c:/music/test.mp3";
+                WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+
+                string msg = "to,from,audio,arm,1,1,c:/music/test3.mp3";
                 string[] data = msg.Split(char.Parse(","));
                 Arm(data);
 
@@ -114,7 +123,8 @@ namespace UnityCore
                 }
                 if (Input.GetKeyDown(KeyCode.N))
                 {
-                    audio1.Pause();
+                    string msg = "000,000,AUDIO,PAUSE,1";
+                    Pause(msg.Split(","));
                 }
                 if (Input.GetKeyDown(KeyCode.M))
                 {
@@ -122,11 +132,11 @@ namespace UnityCore
                 }
                 if (Input.GetKeyDown(KeyCode.C))
                 {
-                    instance.StartCoroutine(FadeOutCo(audio1, 5f));
+                    instance.StartCoroutine(FadeOutCo("1", audio1, 5f));
                 }
                 if (Input.GetKeyDown(KeyCode.V))
                 {
-                    instance.StartCoroutine(FadeInCo(audio1, 5f));
+                    instance.StartCoroutine(FadeInCo("1", audio1, 5f));
                 }
             }
             #endregion
@@ -138,81 +148,144 @@ namespace UnityCore
                 switch (_cmd[4])
                 {
                     case "1":
+                        audio1.Stop();
                         audio1.clip = Resources.Load("blank_audio") as AudioClip;
                         Aud1_SubState = AudioSubStates.Disarmed;
                         Aud1_Name = "None";
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         break;
                     case "2":
+                        audio2.Stop();
                         audio2.clip = Resources.Load("blank_audio") as AudioClip;
                         Aud2_SubState = AudioSubStates.Disarmed;
                         Aud2_Name = "None";
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                     case "ALL":
+                        audio1.Stop();
+                        audio2.Stop();
                         audio1.clip = Resources.Load("blank_audio") as AudioClip;
                         audio2.clip = Resources.Load("blank_audio") as AudioClip;
                         Aud1_SubState = AudioSubStates.Disarmed;
                         Aud1_Name = "None";
                         Aud2_SubState = AudioSubStates.Disarmed;
                         Aud2_Name = "None";
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                 }
             }
-
             public static void Play(string[] _cmd)
             {
+
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.volume = 1;
-                        audio1.Play();
-                        Aud1_SubState = AudioSubStates.Playing;
+                        if (audio1.isPlaying == true) return;
+                        audio1.volume = 0.95f;
+                        CurrentCue = Aud1_Cue;
+                        NextCue = CurrentCue + 1;
+
+                        if (Aud1_FadeInNeeded > 0)
+                        {
+                            Aud1_SubState = AudioSubStates.FadeIn;
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                            instance.StartCoroutine(FadeInCo("1", audio1, Aud1_FadeInNeeded));
+                        }
+                        else
+                        {
+                            audio1.Play();
+                            Aud1_SubState = AudioSubStates.Playing;
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        }
                         break;
                     case "2":
-                        audio2.volume = 1;
-                        audio2.Play();
-                        Aud1_SubState = AudioSubStates.Playing;
+                        if (audio2.isPlaying == true) return;
+                        audio2.volume = 0.95f;
+                        CurrentCue = Aud2_Cue;
+                        NextCue = CurrentCue + 1;
+                        if (Aud2_FadeInNeeded > 0)
+                        {
+                            Aud2_SubState = AudioSubStates.FadeIn;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                            instance.StartCoroutine(FadeInCo("2", audio2, Aud2_FadeInNeeded));
+                        }
+                        else
+                        {
+                            audio2.Play();
+                            Aud2_SubState = AudioSubStates.Playing;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        }
                         break;
                 }
             }
-
             public static void Pause(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.Pause();
+                        if (audio1.isPlaying == true)
+                        {
+                            audio1.Pause();
+                            Aud1_SubState = AudioSubStates.Paused;
+                        }
+                        else
+                        {
+                            audio1.UnPause();
+                            Aud1_SubState = AudioSubStates.Playing;
+                        }
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         break;
                     case "2":
-                        audio2.Pause();
+                        if (audio2.isPlaying == true)
+                        {
+                            audio2.Pause();
+                            Aud2_SubState = AudioSubStates.Paused;
+                        }
+                        else
+                        {
+                            audio2.UnPause();
+                            Aud2_SubState = AudioSubStates.Playing;
+                        }
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                     case "ALL":
                         audio1.Pause();
                         audio2.Pause();
+                        Aud1_SubState = AudioSubStates.Paused;
+                        Aud2_SubState = AudioSubStates.Paused;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                 }
             }
-
             public static void Stop(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
                         audio1.Stop();
+                        Aud1_SubState = AudioSubStates.Stopped;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         break;
                     case "2":
                         audio2.Stop();
+                        Aud1_SubState = AudioSubStates.Stopped;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                     case "ALL":
                         audio1.Stop();
                         audio2.Stop();
+                        Aud1_SubState = AudioSubStates.Stopped;
+                        Aud1_SubState = AudioSubStates.Stopped;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                 }
             }
-
-            public static IEnumerator FadeInCo(AudioSource audioSource, float FadeTime)
+            public static IEnumerator FadeInCo(string AudNum, AudioSource audioSource, float FadeTime)
             {
                 audioSource.volume = 0.1f;
-
                 audioSource.Play();
                 while (audioSource.volume < 1)
                 {
@@ -221,22 +294,39 @@ namespace UnityCore
 
                     yield return null;
                 }
+
+                switch (AudNum)
+                {
+                    case "1":
+                        Aud1_SubState = AudioSubStates.Playing;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        break;
+                    case "2":
+                        Aud2_SubState = AudioSubStates.Playing;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        break;
+                }
+
             }
             public static void FadeIn(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.Play();
+                        if (audio1.isPlaying == true) return;
+                        Aud1_SubState = AudioSubStates.FadeIn;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        instance.StartCoroutine(FadeInCo("1", audio1, float.Parse(_cmd[5])));
                         break;
                     case "2":
-                        audio2.Play();
+                        if (audio2.isPlaying == true) return;
+                        Aud2_SubState = AudioSubStates.FadeIn;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        instance.StartCoroutine(FadeInCo("2", audio2, float.Parse(_cmd[5])));
                         break;
                 }
             }
-
-
-            public static IEnumerator FadeOutCo(AudioSource audioSource, float FadeTime)
+            public static IEnumerator FadeOutCo(string AudNum, AudioSource audioSource, float FadeTime)
             {
                 float startVolume = audioSource.volume;
 
@@ -249,42 +339,70 @@ namespace UnityCore
 
                 audioSource.Stop();
                 audioSource.volume = startVolume;
+
+                switch (AudNum)
+                {
+                    case "1":
+                        Aud1_SubState = AudioSubStates.Ended;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        break;
+                    case "2":
+                        Aud2_SubState = AudioSubStates.Ended;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        break;
+                }
             }
             public static void FadeOut(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
-                        instance.StartCoroutine(FadeOutCo(audio1, float.Parse(_cmd[5])));
+                        if (audio1.isPlaying == false) return;
+                        Aud1_SubState = AudioSubStates.FadeOut;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        instance.StartCoroutine(FadeOutCo("1", audio1, float.Parse(_cmd[5])));
                         break;
                     case "2":
-                        instance.StartCoroutine(FadeOutCo(audio2, float.Parse(_cmd[5])));
+                        if (audio2.isPlaying == false) return;
+                        Aud2_SubState = AudioSubStates.FadeOut;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        instance.StartCoroutine(FadeOutCo("2", audio2, float.Parse(_cmd[5])));
                         break;
                 }
             }
-
             public static void Reduce(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.Play();
+                        if (audio1.isPlaying == false) return;
+                        Aud1_SubState = AudioSubStates.Reduced;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        audio1.volume = 0.5f;
                         break;
                     case "2":
-                        audio2.Play();
+                        if (audio2.isPlaying == false) return;
+                        Aud2_SubState = AudioSubStates.Reduced;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        audio2.volume = 0.5f;
                         break;
                 }
             }
-
             public static void Normal(string[] _cmd)
             {
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.Play();
+                        if (audio1.isPlaying == false) return;
+                        Aud1_SubState = AudioSubStates.Reduced;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        audio1.volume = 0.95f;
                         break;
                     case "2":
-                        audio2.Play();
+                        if (audio2.isPlaying == false) return;
+                        Aud2_SubState = AudioSubStates.Reduced;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        audio2.volume = 0.95f;
                         break;
                 }
             }
@@ -316,7 +434,7 @@ namespace UnityCore
                 string _build;
 
                 // there is no cmd[4] cmd[5] cmd[6]
-                if (_cmd.Length < 7)
+                if (_cmd.Length <= 8)
                 {
                     return;
                 }
@@ -325,18 +443,33 @@ namespace UnityCore
                     switch (_cmd[4])
                     {
                         case "1":
-                            Aud1_SubState = AudioSubStates.Arming;
-                            LogStatic(Aud1_SubState.ToString());
                             Aud1_Cue = int.Parse(_cmd[5]);
+                            Aud1_Name = _cmd[6];
+                            Aud1_SubState = AudioSubStates.Arming;
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                             instance.StartCoroutine(Arm_LoadSong(audio1, _cmd[6]));
+                            Aud1_FadeInNeeded = int.Parse(_cmd[9]);
+                            Aud1_FadeOutNeeded = int.Parse(_cmd[9]);
                             Aud1_SubState = AudioSubStates.Armed;
-                            LogStatic(Aud1_SubState.ToString());
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                            break;
+
+                        case "2":
+                            Aud2_Cue = int.Parse(_cmd[5]);
+                            Aud2_Name = _cmd[6];
+                            Aud2_SubState = AudioSubStates.Arming;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                            instance.StartCoroutine(Arm_LoadSong(audio2, _cmd[6]));
+                            Aud2_FadeInNeeded = int.Parse(_cmd[9]);
+                            Aud2_FadeOutNeeded = int.Parse(_cmd[9]);
+                            Aud2_SubState = AudioSubStates.Armed;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                             break;
                     }
                 }
-
-
             }
+
+
 
 
 
