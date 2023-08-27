@@ -20,6 +20,8 @@ namespace UnityCore
             public static AudioSource audio2;
             public bool Developer;
 
+            public static int WarningTime = 20;
+
             public enum AudioStates
             {
                 Disabled,   // Cannot be used
@@ -45,11 +47,14 @@ namespace UnityCore
                 Disarming   // Audio source is being disarmed
             }
 
-            public static AudioStates Aud1_State = AudioStates.Disabled;
+            //Set the initial states of the audio.
+
+            public static AudioStates Aud1_State = AudioStates.Disabled;         
             public static AudioSubStates Aud1_SubState = AudioSubStates.Disarmed;
             public static AudioStates Aud2_State = AudioStates.Disabled;
             public static AudioSubStates Aud2_SubState = AudioSubStates.Disarmed;
 
+            // Data used for each audio manager.
             public static int Aud1_Cue = 0;
             public static string Aud1_Name = "None";
             public static int Aud2_Cue = 0;
@@ -61,11 +66,15 @@ namespace UnityCore
             private string[] Aud1_Data;
             private string[] Aud2_Data;
 
-
+            
+            // Allowing the fade in/out functions to be used.
             private static int Aud1_FadeInNeeded = 0;
             private static int Aud2_FadeInNeeded = 0;
             private static int Aud1_FadeOutNeeded = 0;
             private static int Aud2_FadeOutNeeded = 0;
+
+            private static int Aud1_Length = 0;
+            private static int Aud2_Length = 0;
 
             #endregion
 
@@ -115,28 +124,46 @@ namespace UnityCore
 
             }
 
+            // TMP Variables
+            private static Aud1_Time = 0;
+            private static Aud2_Time = 0;
             private void Update()
             {
-                if (Input.GetKeyDown(KeyCode.B))
-                {
-                    audio1.Play();
+                Aud1_Time = audio1.time;
+                Aud2_Time = audio2.time;
+                
+                // Audio 1 checker
+                if(Aud1_Time + WarningTime > Aud1_Length){
+                    if(!Aud1_SubState == AudioSubStates.Warning && !Aud1_SubState == AudioSubStates.FadeOut){
+                        Aud1_SubState = AudioSubStates.Warning;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); 
+                    }
+                    if(Aud1_Length - Aud1_FadeOutNeeded - 1 < Aud1_Time){
+                        Aud1_SubState = AudioSubStates.FadeOut;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        instance.StartCoroutine(FadeOutCo("1", audio1, Aud1_FadeOutNeeded));                        
+                    }
                 }
-                if (Input.GetKeyDown(KeyCode.N))
-                {
-                    string msg = "000,000,AUDIO,PAUSE,1";
-                    Pause(msg.Split(","));
+                if(Aud1_Time == Aud1_Length){
+                    Aud1_SubState = AudioSubStates.Ended;
+                    WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                 }
-                if (Input.GetKeyDown(KeyCode.M))
-                {
-                    audio1.Stop();
+
+                // Audio 2 checker
+                if(Aud2_Time + WarningTime > Aud2_Length){
+                    if(!Aud2_SubState == AudioSubStates.Warning && !Aud2_SubState == AudioSubStates.FadeOut){
+                        Aud2_SubState = AudioSubStates.Warning;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
+                    }
+                    if(Aud2_Length - Aud2_FadeOutNeeded - 1 < Aud2_Time){
+                        Aud2_SubState = AudioSubStates.FadeOut;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
+                        instance.StartCoroutine(FadeOutCo("2", audio2, Aud2_FadeOutNeeded));                        
+                    }
                 }
-                if (Input.GetKeyDown(KeyCode.C))
-                {
-                    instance.StartCoroutine(FadeOutCo("1", audio1, 5f));
-                }
-                if (Input.GetKeyDown(KeyCode.V))
-                {
-                    instance.StartCoroutine(FadeInCo("1", audio1, 5f));
+                if(Aud2_Time == Aud2_Length){
+                    Aud2_SubState = AudioSubStates.Ended;
+                    WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
                 }
             }
             #endregion
@@ -153,6 +180,7 @@ namespace UnityCore
                         Aud1_SubState = AudioSubStates.Disarmed;
                         Aud1_Name = "None";
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        Aud1_Length = 0;
                         break;
                     case "2":
                         audio2.Stop();
@@ -160,6 +188,7 @@ namespace UnityCore
                         Aud2_SubState = AudioSubStates.Disarmed;
                         Aud2_Name = "None";
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        Aud2_Length = 0;
                         break;
                     case "ALL":
                         audio1.Stop();
@@ -172,6 +201,8 @@ namespace UnityCore
                         Aud2_Name = "None";
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        Aud1_Length = 0;
+                        Aud2_Length = 0;
                         break;
                 }
             }
@@ -452,6 +483,7 @@ namespace UnityCore
                             Aud1_FadeOutNeeded = int.Parse(_cmd[9]);
                             Aud1_SubState = AudioSubStates.Armed;
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                            Aud1_Length = audio1.clip.length;
                             break;
 
                         case "2":
@@ -464,6 +496,7 @@ namespace UnityCore
                             Aud2_FadeOutNeeded = int.Parse(_cmd[9]);
                             Aud2_SubState = AudioSubStates.Armed;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                            Aud2_Length = audio2.clip.length;
                             break;
                     }
                 }
