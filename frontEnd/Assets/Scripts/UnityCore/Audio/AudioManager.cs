@@ -73,8 +73,8 @@ namespace UnityCore
             private static int Aud1_FadeOutNeeded = 0;
             private static int Aud2_FadeOutNeeded = 0;
 
-            private static int Aud1_Length = 0;
-            private static int Aud2_Length = 0;
+            private static float Aud1_Length = 0;
+            private static float Aud2_Length = 0;
 
             #endregion
 
@@ -125,8 +125,8 @@ namespace UnityCore
             }
 
             // TMP Variables
-            private static Aud1_Time = 0;
-            private static Aud2_Time = 0;
+            private static float Aud1_Time = 0;
+            private static float Aud2_Time = 0;
             private void Update()
             {
                 Aud1_Time = audio1.time;
@@ -134,7 +134,7 @@ namespace UnityCore
                 
                 // Audio 1 checker
                 if(Aud1_Time + WarningTime > Aud1_Length){
-                    if(!Aud1_SubState == AudioSubStates.Warning && !Aud1_SubState == AudioSubStates.FadeOut){
+                    if(Aud1_SubState != AudioSubStates.Warning && Aud1_SubState != AudioSubStates.FadeOut){
                         Aud1_SubState = AudioSubStates.Warning;
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); 
                     }
@@ -151,7 +151,7 @@ namespace UnityCore
 
                 // Audio 2 checker
                 if(Aud2_Time + WarningTime > Aud2_Length){
-                    if(!Aud2_SubState == AudioSubStates.Warning && !Aud2_SubState == AudioSubStates.FadeOut){
+                    if(Aud2_SubState != AudioSubStates.Warning && Aud2_SubState != AudioSubStates.FadeOut){
                         Aud2_SubState = AudioSubStates.Warning;
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
                     }
