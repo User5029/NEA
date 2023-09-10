@@ -2,7 +2,11 @@ using System.Collections;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityCore.Sockets;
-
+using System.IO;
+using System.Threading.Tasks;
+using UnityEngine.Networking;
+using System;
+using NAudio.Gui.TrackView;
 
 namespace UnityCore
 {
@@ -12,6 +16,7 @@ namespace UnityCore
         {
             private static AudioManager instance = null;
             public static AudioManager Instance;
+            private static CoroutineExecuter ceinstance;
 
             #region variables
 
@@ -55,12 +60,12 @@ namespace UnityCore
             public static AudioSubStates Aud2_SubState = AudioSubStates.Disarmed;
 
             // Data used for each audio manager.
-            public static int Aud1_Cue = 0;
+            public static int Aud1_Cue = 1;
             public static string Aud1_Name = "None";
-            public static int Aud2_Cue = 0;
+            public static int Aud2_Cue = 2;
             public static string Aud2_Name = "None";
             public static int CurrentCue = 0;
-            public static int NextCue = 0;
+            public static int NextCue = 1;
 
             // Private Variables
             private string[] Aud1_Data;
@@ -92,6 +97,15 @@ namespace UnityCore
                 }
                 DontDestroyOnLoad(this.gameObject);
 
+                if (!ceinstance)
+                {
+                    ceinstance = FindObjectOfType<CoroutineExecuter>();
+                    if(!ceinstance)
+                    {
+                        ceinstance = new GameObject("CoroutineExecuter").AddComponent<CoroutineExecuter>();
+                    }
+                }
+
                 audio1 = GameObject.FindGameObjectWithTag("audio1").GetComponentsInChildren<AudioSource>()[0];
                 audio2 = GameObject.FindGameObjectWithTag("audio2").GetComponentsInChildren<AudioSource>()[0];
 
@@ -118,52 +132,65 @@ namespace UnityCore
                 WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                 WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
 
-                string msg = "to,from,audio,arm,1,1,c:/music/test3.mp3";
-                string[] data = msg.Split(char.Parse(","));
-                Arm(data);
+                //string msg = "to,from,audio,arm,1,1,test,c:/music/test3.mp3";
+                //string[] data = msg.Split(char.Parse(","));
+                //Arm(data, data);
 
             }
 
             // TMP Variables
-            private static float Aud1_Time = 0;
-            private static float Aud2_Time = 0;
+            private static float Aud1_Time = -1;
+            private static float Aud2_Time = -1;
             private void Update()
             {
                 Aud1_Time = audio1.time;
                 Aud2_Time = audio2.time;
-                
-                // Audio 1 checker
-                if(Aud1_Time + WarningTime > Aud1_Length){
-                    if(Aud1_SubState != AudioSubStates.Warning && Aud1_SubState != AudioSubStates.FadeOut){
-                        Aud1_SubState = AudioSubStates.Warning;
-                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); 
-                    }
-                    if(Aud1_Length - Aud1_FadeOutNeeded - 1 < Aud1_Time){
-                        Aud1_SubState = AudioSubStates.FadeOut;
-                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                        instance.StartCoroutine(FadeOutCo("1", audio1, Aud1_FadeOutNeeded));                        
-                    }
-                }
-                if(Aud1_Time == Aud1_Length){
-                    Aud1_SubState = AudioSubStates.Ended;
-                    WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                }
 
-                // Audio 2 checker
-                if(Aud2_Time + WarningTime > Aud2_Length){
-                    if(Aud2_SubState != AudioSubStates.Warning && Aud2_SubState != AudioSubStates.FadeOut){
-                        Aud2_SubState = AudioSubStates.Warning;
-                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
+                // Audio 1 checker
+                if (audio1.isPlaying)
+                {
+                    if (Aud1_Time + WarningTime > Aud1_Length)
+                    {
+                        if (Aud1_SubState != AudioSubStates.Warning && Aud1_SubState != AudioSubStates.FadeOut)
+                        {
+                            Aud1_SubState = AudioSubStates.Warning;
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        }
+                        if (Aud1_Length - Aud1_FadeOutNeeded - 1 < Aud1_Time)
+                        {
+                            Aud1_SubState = AudioSubStates.FadeOut;
+                            WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                            instance.StartCoroutine(FadeOutCo("1", audio1, Aud1_FadeOutNeeded));
+                        }
                     }
-                    if(Aud2_Length - Aud2_FadeOutNeeded - 1 < Aud2_Time){
-                        Aud2_SubState = AudioSubStates.FadeOut;
-                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
-                        instance.StartCoroutine(FadeOutCo("2", audio2, Aud2_FadeOutNeeded));                        
+                    if (Aud1_Time == Aud1_Length)
+                    {
+                        Aud1_SubState = AudioSubStates.Ended;
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                     }
                 }
-                if(Aud2_Time == Aud2_Length){
-                    Aud2_SubState = AudioSubStates.Ended;
-                    WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
+                // Audio 2 checker
+                if (audio2.isPlaying)
+                {
+                    if (Aud2_Time + WarningTime > Aud2_Length)
+                    {
+                        if (Aud2_SubState != AudioSubStates.Warning && Aud2_SubState != AudioSubStates.FadeOut)
+                        {
+                            Aud2_SubState = AudioSubStates.Warning;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        }
+                        if (Aud2_Length - Aud2_FadeOutNeeded - 1 < Aud2_Time)
+                        {
+                            Aud2_SubState = AudioSubStates.FadeOut;
+                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                            instance.StartCoroutine(FadeOutCo("2", audio2, Aud2_FadeOutNeeded));
+                        }
+                    }
+                    if (Aud2_Time == Aud2_Length)
+                    {
+                        Aud2_SubState = AudioSubStates.Ended;
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                    }
                 }
             }
             #endregion
@@ -176,7 +203,7 @@ namespace UnityCore
                 {
                     case "1":
                         audio1.Stop();
-                        audio1.clip = Resources.Load("blank_audio") as AudioClip;
+                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
                         Aud1_SubState = AudioSubStates.Disarmed;
                         Aud1_Name = "None";
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
@@ -184,7 +211,7 @@ namespace UnityCore
                         break;
                     case "2":
                         audio2.Stop();
-                        audio2.clip = Resources.Load("blank_audio") as AudioClip;
+                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
                         Aud2_SubState = AudioSubStates.Disarmed;
                         Aud2_Name = "None";
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
@@ -193,8 +220,8 @@ namespace UnityCore
                     case "ALL":
                         audio1.Stop();
                         audio2.Stop();
-                        audio1.clip = Resources.Load("blank_audio") as AudioClip;
-                        audio2.clip = Resources.Load("blank_audio") as AudioClip;
+                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
+                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
                         Aud1_SubState = AudioSubStates.Disarmed;
                         Aud1_Name = "None";
                         Aud2_SubState = AudioSubStates.Disarmed;
@@ -213,6 +240,7 @@ namespace UnityCore
                 {
                     case "1":
                         if (audio1.isPlaying == true) return;
+                        if (audio1.clip.length == 1.224f) return;
                         audio1.volume = 0.95f;
                         CurrentCue = Aud1_Cue;
                         NextCue = CurrentCue + 1;
@@ -232,6 +260,7 @@ namespace UnityCore
                         break;
                     case "2":
                         if (audio2.isPlaying == true) return;
+                        if (audio2.clip.length == 1.224f) return;
                         audio2.volume = 0.95f;
                         CurrentCue = Aud2_Cue;
                         NextCue = CurrentCue + 1;
@@ -438,19 +467,24 @@ namespace UnityCore
                 }
             }
 
-            private static IEnumerator Arm_LoadSong(AudioSource _audiosource, string path)
+            static async Task<UnityEngine.AudioClip> Arm_LoadClip(string path)
             {
-                string url = string.Format("file://{0}", path);
-#pragma warning disable
-                WWW www = new WWW(url);
-                yield return www;
+                UnityEngine.AudioClip clip = null;
+                Debug.Log("path: " + path);
+                Debug.Log("3.1");
 
-                _audiosource.clip = NAudioPlayer.FromMp3Data(www.bytes);
-                yield return "true";
+                WWW www = new WWW(path);
+                Task.Delay(5);
+                clip = NAudioPlayer.FromMp3Data(www.bytes);
+                Task.Delay(5);
+                return clip;
+
             }
 
-            public static void Arm(string[] _cmd)
+
+            public static async void Arm(string[] _cmd, string[] _ocmd)
             {
+                Debug.Log("@aud");
                 /*
                     cmd[4] - channel                // Default: none,   !: return
                     cmd[5] - cue #                  // Default: none,   !: return
@@ -462,9 +496,10 @@ namespace UnityCore
                     cmd[11] - postwait              // Default: 1,      !: (Default)
                 */
 
-                string _build;
+                //string _build;
 
                 // there is no cmd[4] cmd[5] cmd[6]
+                Debug.Log(_cmd.Length);
                 if (_cmd.Length <= 8)
                 {
                     return;
@@ -474,14 +509,19 @@ namespace UnityCore
                     switch (_cmd[4])
                     {
                         case "1":
+                            LogStatic("1");
                             Aud1_Cue = int.Parse(_cmd[5]);
                             Aud1_Name = _cmd[6];
                             Aud1_SubState = AudioSubStates.Arming;
+                            LogStatic("2");
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                            instance.StartCoroutine(Arm_LoadSong(audio1, _cmd[6]));
+                            LogStatic("3");
+                            audio1.clip = await Arm_LoadClip("file://" + _ocmd[7]);
+                            LogStatic("5");
                             Aud1_FadeInNeeded = int.Parse(_cmd[9]);
-                            Aud1_FadeOutNeeded = int.Parse(_cmd[9]);
+                            Aud1_FadeOutNeeded = int.Parse(_cmd[10]);
                             Aud1_SubState = AudioSubStates.Armed;
+                            LogStatic("6");
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                             Aud1_Length = audio1.clip.length;
                             break;
@@ -491,9 +531,9 @@ namespace UnityCore
                             Aud2_Name = _cmd[6];
                             Aud2_SubState = AudioSubStates.Arming;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                            instance.StartCoroutine(Arm_LoadSong(audio2, _cmd[6]));
+                            audio2.clip = await Arm_LoadClip("file://" + _ocmd[7]);
                             Aud2_FadeInNeeded = int.Parse(_cmd[9]);
-                            Aud2_FadeOutNeeded = int.Parse(_cmd[9]);
+                            Aud2_FadeOutNeeded = int.Parse(_cmd[10]);
                             Aud2_SubState = AudioSubStates.Armed;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                             Aud2_Length = audio2.clip.length;
@@ -543,5 +583,8 @@ namespace UnityCore
             }
             #endregion
         }
+
     }
+
+
 }

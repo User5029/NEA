@@ -116,13 +116,13 @@ namespace UnityCore
             {
                 // Parse message into an array
                 string[] cmd = _message.ToUpper().Split(char.Parse(","));
-
+                string[] ocmd = _message.Split(char.Parse(","));
                 // Check to see if this should receive the message
                 // websocketId = this device (defined above), 000 = general broadcast
                 if (cmd[0] != websocketId && cmd[0] != "000") return;
 
                 // check to see if its from the control server
-                if (cmd[0] != "001") return;
+                if (cmd[1] != "001") return;
 
                 // All of the main commands
                 // Some are not implemented yet but will be here for the future.
@@ -131,8 +131,8 @@ namespace UnityCore
                     case "STATUS":
                         Status(cmd);
                         break;
-                    case "AUDIO":
-                        Audio(cmd);
+                    case "AUDIO":                    
+                        Audio(cmd, ocmd);
                         break;
                     case "CUEREQ":
                         break;
@@ -155,8 +155,13 @@ namespace UnityCore
                 Debug.Log("001," + websocketId + ",STATUS,SEND," + audioNum + "," + State + "," + Substate);
                 ws.Send("001," + websocketId + ",STATUS,SEND," + audioNum + "," + State + "," + Substate);
             }
+            public static void Send_CUEREQ(string channel, string cuenum)
+            {
+                Debug.Log("001," + websocketId + ",CUEREQ,REQUEST," + channel + "," + cuenum);
+                ws.Send("001," + websocketId + ",CUEREQ,REQUEST," + channel + "," + cuenum);
+            }
 
-            public void Audio(string[] _cmd)
+            public static void Audio(string[] _cmd, string[] _ocmd)
             {
                 if (_cmd[4] != "1" && _cmd[4] != "2" && _cmd[4] != "ALL") return;
                 switch (_cmd[3])
@@ -190,9 +195,16 @@ namespace UnityCore
                         break;
 
                     case "ARM":
-                        AudioManager.Arm(_cmd);
+                        Debug.Log("WS -> Aud");
+                        AudioManager.Arm(_cmd, _ocmd);
                         break;
                 }
+            }
+
+            public IEnumerator testabcde()
+            {
+                Debug.Log("TEST IN WSManager");
+                yield return true;
             }
 
 

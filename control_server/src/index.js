@@ -17,13 +17,17 @@ wss.on('connection', function connection(ws) {
       // setTimeout(() => {
       //    ws.send(message)
       // }, 1000)
-      if(counter === 0){
-         ws.send('c:/music/test2.mp3');
-         counter = counter + 1
-      } else if(counter === 1){
-         ws.send('c:/music/test.mp3')
-         counter = 0
+      if(message === "001,002,CUEREQ,REQUEST,1,1"){
+         ws.send('002,001,audio,arm,1,1,test,c:/music/test2.wav,0,0');
       }
+      
+      // if(counter === 0){
+      //    ws.send('001,000,audio,arm,1,1,test,c:/music/test2.mp3,0,0,0,0');
+      //    counter = counter + 1
+      // } else if(counter === 1){
+      //    ws.send('c:/music/test.mp3')
+      //    counter = 0
+      // }
    })
 })
 wss.on('listening', () => {
