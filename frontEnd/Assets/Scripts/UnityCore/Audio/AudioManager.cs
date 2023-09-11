@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 using System;
 using NAudio.Gui.TrackView;
+using UnityCore.Audio;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace UnityCore
 {
@@ -16,7 +19,9 @@ namespace UnityCore
         {
             private static AudioManager instance = null;
             public static AudioManager Instance;
-            private static CoroutineExecuter ceinstance;
+
+            public static SongNAudio SongNAudio;
+
 
             #region variables
 
@@ -26,6 +31,9 @@ namespace UnityCore
             public bool Developer;
 
             public static int WarningTime = 20;
+
+            public static float Aud1_Length = 0;
+            public static float Aud2_Length = 0;
 
             public enum AudioStates
             {
@@ -78,9 +86,6 @@ namespace UnityCore
             private static int Aud1_FadeOutNeeded = 0;
             private static int Aud2_FadeOutNeeded = 0;
 
-            private static float Aud1_Length = 0;
-            private static float Aud2_Length = 0;
-
             #endregion
 
             #region Unity Functions
@@ -97,17 +102,11 @@ namespace UnityCore
                 }
                 DontDestroyOnLoad(this.gameObject);
 
-                if (!ceinstance)
-                {
-                    ceinstance = FindObjectOfType<CoroutineExecuter>();
-                    if(!ceinstance)
-                    {
-                        ceinstance = new GameObject("CoroutineExecuter").AddComponent<CoroutineExecuter>();
-                    }
-                }
-
                 audio1 = GameObject.FindGameObjectWithTag("audio1").GetComponentsInChildren<AudioSource>()[0];
                 audio2 = GameObject.FindGameObjectWithTag("audio2").GetComponentsInChildren<AudioSource>()[0];
+
+                SongNAudio = GameObject.FindGameObjectWithTag("AudManager").GetComponentInChildren<SongNAudio>();
+
 
                 if (audio1 == null)
                 {
@@ -117,6 +116,11 @@ namespace UnityCore
                 if (audio2 == null)
                 {
                     LogError("Error getting Audio Source #2");
+                    return;
+                }
+                if(!SongNAudio)
+                {
+                    LogError("Error getting SongNAudio");
                     return;
                 }
             }
@@ -139,8 +143,10 @@ namespace UnityCore
             }
 
             // TMP Variables
-            private static float Aud1_Time = -1;
-            private static float Aud2_Time = -1;
+            public static float Aud1_Time = -1;
+            public static float Aud2_Time = -1;
+            //private static float Aud1_Left = 0;
+            //private static float Aud2_Left = 0;
             private void Update()
             {
                 Aud1_Time = audio1.time;
@@ -149,19 +155,27 @@ namespace UnityCore
                 // Audio 1 checker
                 if (audio1.isPlaying)
                 {
-                    if (Aud1_Time + WarningTime > Aud1_Length)
+                    
+                    if (Aud1_Time + WarningTime > Aud1_Length || Aud1_Time + WarningTime == Aud1_Length)
                     {
                         if (Aud1_SubState != AudioSubStates.Warning && Aud1_SubState != AudioSubStates.FadeOut)
                         {
                             Aud1_SubState = AudioSubStates.Warning;
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         }
-                        if (Aud1_Length - Aud1_FadeOutNeeded - 1 < Aud1_Time)
+                        //Debug.Log(Aud1_Length - Aud1_FadeOutNeeded <= Aud1_Time);
+                        //Debug.Log(Aud1_SubState != AudioSubStates.FadeOut);
+                        //Aud1_Left = Aud1_Length - Aud1_Time;
+                        //Debug.Log("Time Left: " + (Aud1_Left) + " " + (Aud1_Left < Aud1_FadeInNeeded));
+                        if (Aud1_Length - Aud1_FadeOutNeeded <= Aud1_Time && Aud1_SubState != AudioSubStates.FadeOut)
                         {
                             Aud1_SubState = AudioSubStates.FadeOut;
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                             instance.StartCoroutine(FadeOutCo("1", audio1, Aud1_FadeOutNeeded));
                         }
+                    } else
+                    {
+                        //LogStatic((Aud1_Time + WarningTime) + "/" + Aud1_Length + " :: " + (Aud1_Time + WarningTime > Aud1_Length));
                     }
                     if (Aud1_Time == Aud1_Length)
                     {
@@ -172,6 +186,7 @@ namespace UnityCore
                 // Audio 2 checker
                 if (audio2.isPlaying)
                 {
+                    return;
                     if (Aud2_Time + WarningTime > Aud2_Length)
                     {
                         if (Aud2_SubState != AudioSubStates.Warning && Aud2_SubState != AudioSubStates.FadeOut)
@@ -208,6 +223,7 @@ namespace UnityCore
                         Aud1_Name = "None";
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         Aud1_Length = 0;
+                        Aud1_Time = -1;
                         break;
                     case "2":
                         audio2.Stop();
@@ -216,6 +232,7 @@ namespace UnityCore
                         Aud2_Name = "None";
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         Aud2_Length = 0;
+                        Aud2_Time = -1;
                         break;
                     case "ALL":
                         audio1.Stop();
@@ -230,6 +247,8 @@ namespace UnityCore
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         Aud1_Length = 0;
                         Aud2_Length = 0;
+                        Aud1_Time = -1;
+                        Aud2_Time = -1; 
                         break;
                 }
             }
@@ -241,10 +260,12 @@ namespace UnityCore
                     case "1":
                         if (audio1.isPlaying == true) return;
                         if (audio1.clip.length == 1.224f) return;
+                        LogStatic(Aud1_Length.ToString());
                         audio1.volume = 0.95f;
                         CurrentCue = Aud1_Cue;
                         NextCue = CurrentCue + 1;
 
+                        LogStatic(Aud1_FadeInNeeded.ToString());
                         if (Aud1_FadeInNeeded > 0)
                         {
                             Aud1_SubState = AudioSubStates.FadeIn;
@@ -467,24 +488,22 @@ namespace UnityCore
                 }
             }
 
-            static async Task<UnityEngine.AudioClip> Arm_LoadClip(string path)
+
+            private static IEnumerator LoadSongCoroutine(AudioSource aud, string path)
             {
-                UnityEngine.AudioClip clip = null;
-                Debug.Log("path: " + path);
-                Debug.Log("3.1");
+                string url = string.Format("file://{0}", path);
+                #pragma warning disable
+                WWW www = new WWW(url);
+                yield return www;
 
-                WWW www = new WWW(path);
-                Task.Delay(5);
-                clip = NAudioPlayer.FromMp3Data(www.bytes);
-                Task.Delay(5);
-                return clip;
-
+                aud.clip = NAudioPlayer.FromMp3Data(www.bytes);
+                Debug.Log("Audio Armed");
             }
+
 
 
             public static async void Arm(string[] _cmd, string[] _ocmd)
             {
-                Debug.Log("@aud");
                 /*
                     cmd[4] - channel                // Default: none,   !: return
                     cmd[5] - cue #                  // Default: none,   !: return
@@ -498,9 +517,31 @@ namespace UnityCore
 
                 //string _build;
 
-                // there is no cmd[4] cmd[5] cmd[6]
-                Debug.Log(_cmd.Length);
-                if (_cmd.Length <= 8)
+                // there is no cmd[4] cmd[5] cmd[6] cmd[7]
+
+                List<string> newcmd = new List<string>(_cmd);
+
+
+                if (newcmd.Count <= 8)
+                {
+                    return;
+                }
+                if (newcmd.Count == 8)
+                {
+                    newcmd.Add("0");
+                    newcmd.Add("0");
+                    newcmd.Add("0");
+                }
+                if (newcmd.Count == 9)
+                {
+                    newcmd.Add("0");
+                    newcmd.Add("0");
+                }
+                if(newcmd.Count == 10)
+                {
+                    newcmd.Add("0");
+                }
+                if(newcmd.Count() < 11)
                 {
                     return;
                 }
@@ -509,21 +550,24 @@ namespace UnityCore
                     switch (_cmd[4])
                     {
                         case "1":
-                            LogStatic("1");
                             Aud1_Cue = int.Parse(_cmd[5]);
                             Aud1_Name = _cmd[6];
                             Aud1_SubState = AudioSubStates.Arming;
-                            LogStatic("2");
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                            LogStatic("3");
-                            audio1.clip = await Arm_LoadClip("file://" + _ocmd[7]);
-                            LogStatic("5");
-                            Aud1_FadeInNeeded = int.Parse(_cmd[9]);
-                            Aud1_FadeOutNeeded = int.Parse(_cmd[10]);
+                            SongNAudio.toSet = "1";
+                            SongNAudio.path = _ocmd[7];
+                            while (SongNAudio.done == false) { }
+                            SongNAudio.done = false;
+                            LogStatic("1.1");
+                            Aud1_FadeInNeeded = int.Parse(newcmd[9]);
+                            LogStatic("1.2");
+                            Aud1_FadeOutNeeded = int.Parse(newcmd[10]);
+                            LogStatic("1.3");
                             Aud1_SubState = AudioSubStates.Armed;
-                            LogStatic("6");
+                            LogStatic("1.4");
+                            Debug.Log("Length: " + Aud1_Length + " FadeIn: " + Aud1_FadeInNeeded + " FadeOut: " + Aud1_FadeOutNeeded);
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                            Aud1_Length = audio1.clip.length;
+                            
                             break;
 
                         case "2":
@@ -531,7 +575,7 @@ namespace UnityCore
                             Aud2_Name = _cmd[6];
                             Aud2_SubState = AudioSubStates.Arming;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                            audio2.clip = await Arm_LoadClip("file://" + _ocmd[7]);
+                            //instance.StartCoroutine(LoadSongCoroutine(audio1, _cmd[7]));
                             Aud2_FadeInNeeded = int.Parse(_cmd[9]);
                             Aud2_FadeOutNeeded = int.Parse(_cmd[10]);
                             Aud2_SubState = AudioSubStates.Armed;

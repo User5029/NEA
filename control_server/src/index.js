@@ -7,7 +7,7 @@ require('./httpserver')
 
 let counter = 0
 wss.on('connection', function connection(ws) {
-   console.log("Client Connected.")   
+   console.log("Client Connected.")
    ws.on('message', (data, isBinary) => {
       const message = isBinary ? data : data.toString();
       let cmd = message.split(',');
@@ -17,10 +17,10 @@ wss.on('connection', function connection(ws) {
       // setTimeout(() => {
       //    ws.send(message)
       // }, 1000)
-      if(message === "001,002,CUEREQ,REQUEST,1,1"){
-         ws.send('002,001,audio,arm,1,1,test,c:/music/test2.wav,0,0');
+      if (message === "001,002,CUEREQ,REQUEST,1,1") {
+         ws.send('002,001,audio,arm,1,1,test,c:/music/test4.mp3,0,0,5');
       }
-      
+
       // if(counter === 0){
       //    ws.send('001,000,audio,arm,1,1,test,c:/music/test2.mp3,0,0,0,0');
       //    counter = counter + 1
