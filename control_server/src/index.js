@@ -18,7 +18,7 @@ wss.on('connection', function connection(ws) {
       //    ws.send(message)
       // }, 1000)
       if (message === "001,002,CUEREQ,REQUEST,1,1") {
-         ws.send('002,001,audio,arm,1,1,test,c:/music/test4.mp3,0,0,5');
+         ws.send('002,001,audio,arm,1,1,test,c:/a.mp3,0,0,5');
       }
 
       // if(counter === 0){
