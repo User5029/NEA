@@ -11,7 +11,8 @@ namespace UnityCore
     {
         public class KeyManager : MonoBehaviour
         {
-
+            
+            // Generates a single instance of this KeyManager
             private static KeyManager instance = null;
             public static KeyManager Instance;
 
@@ -26,6 +27,7 @@ namespace UnityCore
 
             private void Awake()
             {
+                // Makes sure there is a non existing instance of this manager before proceeding
                 if (instance != null && instance != this)
                 {
                     Destroy(this.gameObject);
@@ -35,6 +37,7 @@ namespace UnityCore
                 {
                     instance = this;
                 }
+                // Does not destory this manager when a scene is reloaded.
                 DontDestroyOnLoad(this.gameObject);
 
             }
@@ -79,6 +82,8 @@ namespace UnityCore
             #endregion
 
             #region DEBUG
+            // These are custom functions to append the filename to the start of the log.
+            // This is done to make sure that it is easy to identify where problems are comming from.
             private void Log(string _msg)
             {
                 if (!Developer)

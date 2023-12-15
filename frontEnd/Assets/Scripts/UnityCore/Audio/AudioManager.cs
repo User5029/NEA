@@ -17,6 +17,7 @@ namespace UnityCore
     {
         public class AudioManager : MonoBehaviour
         {
+            // Creates the instance of the AudioManager
             private static AudioManager instance = null;
             public static AudioManager Instance;
 
@@ -91,6 +92,7 @@ namespace UnityCore
             #region Unity Functions
             private void Awake()
             {
+                // Makes sure there is a non existing instance of this manager before proceeding
                 if (instance != null && instance != this)
                 {
                     Destroy(this.gameObject);
@@ -100,14 +102,15 @@ namespace UnityCore
                 {
                     instance = this;
                 }
+                // Does not destory this manager when a scene is reloaded.
                 DontDestroyOnLoad(this.gameObject);
 
+                // These 3 objects make it so that less needs to be done in unity and more can be done in code.
                 audio1 = GameObject.FindGameObjectWithTag("audio1").GetComponentsInChildren<AudioSource>()[0];
                 audio2 = GameObject.FindGameObjectWithTag("audio2").GetComponentsInChildren<AudioSource>()[0];
-
                 SongNAudio = GameObject.FindGameObjectWithTag("AudManager").GetComponentInChildren<SongNAudio>();
 
-
+                // Check to make sure the correct objects are passed to this manager in the unity engine.
                 if (audio1 == null)
                 {
                     LogError("Error getting Audio Source #1");
@@ -128,6 +131,7 @@ namespace UnityCore
 
             private void Start()
             {
+                // Starts the audio manager by loading the 'blank' track into the audio sources so no accidental noises is made.
                 Disarm("0,1,2,3,ALL".Split(","));
                 Log("Setting Audio Sources to Manual.");
                 Aud1_State = AudioStates.Manual;
@@ -149,6 +153,12 @@ namespace UnityCore
             //private static float Aud2_Left = 0;
             private void Update()
             {
+                /*
+                    Every time the frame updates it first checks to see if the audio source is playing
+                    Then checks to see if the length of time left is less then the warning time
+                    Then check to see if it should fade out the music if the time has exeeded.
+                    Then checks if the length of the audio is the same as the length of the track
+                */
                 Aud1_Time = audio1.time;
                 Aud2_Time = audio2.time;
 
@@ -214,58 +224,59 @@ namespace UnityCore
 
             public static void Disarm(string[] _cmd)
             {
+                // Takes in an array called _cmd and checks index4 for "1" or "2" or "ALL"
                 switch (_cmd[4])
                 {
                     case "1":
-                        audio1.Stop();
-                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
-                        Aud1_SubState = AudioSubStates.Disarmed;
-                        Aud1_Name = "None";
-                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                        Aud1_Length = 0;
-                        Aud1_Time = -1;
+                        audio1.Stop(); // Stops the audio if playing
+                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip; // Loads blank clip
+                        Aud1_SubState = AudioSubStates.Disarmed; // Sets local property of the audio source
+                        Aud1_Name = "None"; // Reset variables
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); // Sends info to control server
+                        Aud1_Length = 0; // Reset variables
+                        Aud1_Time = -1; // Reset variables
                         break;
                     case "2":
-                        audio2.Stop();
-                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
-                        Aud2_SubState = AudioSubStates.Disarmed;
-                        Aud2_Name = "None";
-                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                        Aud2_Length = 0;
-                        Aud2_Time = -1;
+                        audio2.Stop(); // Stops the audio if playing
+                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip; // Loads blank clip
+                        Aud2_SubState = AudioSubStates.Disarmed; // Sets local property of the audio source
+                        Aud2_Name = "None"; // Reset variables
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); // Sends info to control server
+                        Aud2_Length = 0; // Reset variables
+                        Aud2_Time = -1; // Reset variables
                         break;
                     case "ALL":
-                        audio1.Stop();
-                        audio2.Stop();
-                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
-                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip;
-                        Aud1_SubState = AudioSubStates.Disarmed;
-                        Aud1_Name = "None";
-                        Aud2_SubState = AudioSubStates.Disarmed;
-                        Aud2_Name = "None";
-                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                        Aud1_Length = 0;
-                        Aud2_Length = 0;
-                        Aud1_Time = -1;
-                        Aud2_Time = -1; 
+                        audio1.Stop(); // Stops the audio if playing
+                        audio2.Stop(); // Stops the audio if playing
+                        audio1.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip; // Loads blank clip
+                        audio2.clip = Resources.Load("blank_audio") as UnityEngine.AudioClip; // Loads blank clip
+                        Aud1_SubState = AudioSubStates.Disarmed; // Sets local property of the audio source
+                        Aud1_Name = "None"; // Reset variables
+                        Aud2_SubState = AudioSubStates.Disarmed; // Sets local property of the audio source
+                        Aud2_Name = "None"; // Reset variables
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); // Sends info to control server
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); // Sends info to control server
+                        Aud1_Length = 0; // Reset variables
+                        Aud2_Length = 0; // Reset variables
+                        Aud1_Time = -1; // Reset variables
+                        Aud2_Time = -1; // Reset variables
                         break;
                 }
             }
             public static void Play(string[] _cmd)
             {
 
+                // Takes in an array called _cmd and checks index4 for "1" or "2"
                 switch (_cmd[4])
                 {
                     case "1":
-                        if (audio1.isPlaying == true) return;
-                        if (audio1.clip.length == 1.224f) return;
-                        LogStatic(Aud1_Length.ToString());
-                        audio1.volume = 0.95f;
-                        CurrentCue = Aud1_Cue;
-                        NextCue = CurrentCue + 1;
+                        if (audio1.isPlaying == true) return; // Check to makes sure that the audio can actually be played
+                        if (audio1.clip.length == 1.224f) return; // Check to makes sure that the audio can actually be played
+                        audio1.volume = 0.95f; // Sets the volume to 95% to ensure there is no problems from the fadeout functions (safety)
+                        CurrentCue = Aud1_Cue; // Sets the cue variables so that the automated part of the code can function
+                        NextCue = CurrentCue + 1; // Sets the cue variables so that the automated part of the code can function
 
-                        LogStatic(Aud1_FadeInNeeded.ToString());
+                        // Check to see if the audio needs to be faded in
                         if (Aud1_FadeInNeeded > 0)
                         {
                             Aud1_SubState = AudioSubStates.FadeIn;
@@ -280,11 +291,13 @@ namespace UnityCore
                         }
                         break;
                     case "2":
-                        if (audio2.isPlaying == true) return;
-                        if (audio2.clip.length == 1.224f) return;
-                        audio2.volume = 0.95f;
-                        CurrentCue = Aud2_Cue;
-                        NextCue = CurrentCue + 1;
+                        if (audio2.isPlaying == true) return; // Check to makes sure that the audio can actually be played
+                        if (audio2.clip.length == 1.224f) return; // Check to makes sure that the audio can actually be played
+                        audio2.volume = 0.95f; // Sets the volume to 95% to ensure there is no problems from the fadeout functions (safety)
+                        CurrentCue = Aud2_Cue; // Sets the cue variables so that the automated part of the code can function
+                        NextCue = CurrentCue + 1; // Sets the cue variables so that the automated part of the code can function
+                        
+                        // Check to see if the audio needs to be faded in
                         if (Aud2_FadeInNeeded > 0)
                         {
                             Aud2_SubState = AudioSubStates.FadeIn;
