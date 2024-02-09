@@ -1,0 +1,8 @@
+{
+    "mariadb": {
+        "host": null,
+        "user": null,
+        "password": null,
+        "database": null
+    }
+}

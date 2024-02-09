@@ -7,7 +7,8 @@ node_modules
 **/node_modules
 node_modules
 output
-
+control_server2/src/config.json
+control_server/src/config.json
 #
 # UNITY
 #
