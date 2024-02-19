@@ -1,9 +1,8 @@
-class client {
+class CLIENT {
     constructor() {
-        
+             
     }
   }
 
 
-
-module.exports = {client}
+module.exports = {CLIENT}
