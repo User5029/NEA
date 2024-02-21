@@ -1,7 +1,7 @@
 #
 # NODEJS
 #
-
+output
 control_server2/node_modules
 node_modules
 **/node_modules
