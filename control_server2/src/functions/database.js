@@ -2,6 +2,12 @@ const mysql = require('mysql')
 const fs = require('fs')
 const { promisify } = require('util')
 
+/**
+ * TODO: Add SQL injection protection (maybe regex?)
+ * TODO: Parameterized queries
+ * TODO: Multi query detection
+ */
+
 class DB {
   // This is executed when the class is first added to the 
   constructor(client) {
@@ -31,10 +37,20 @@ class DB {
 
     this.DBQuery = promisify(this.connection.query).bind(this.connection)
 
-    this.init() // Makes sure that the database schema is in place so that the program does not crash when the schema is not present.
+  
+    // Usage
+    const userInput = "Alice'; DROP TABLE users;";
+    const sanitizedInput = this.connection.escape(userInput)    
+    console.log("Sanitized input:", sanitizedInput);
+
+    this.#init() // Makes sure that the database schema is in place so that the program does not crash when the schema is not present.
   }
 
-  async init() {
+  /**
+   * This function executes in the background to hide the task from the main program
+   * The '#' before the name of the function makes it a private function 
+   */
+  async #init() {
     const dataSql = fs.readFileSync("./src/functions/data.sql", "utf-8"); // Gets the data from the file and decodes using utf-8
     const queries = dataSql.split(';'); // Splits whole schema into smaller schemas to be executed individually
     // cycles through all the table schemas and executes the query
