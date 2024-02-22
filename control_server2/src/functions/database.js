@@ -6,6 +6,18 @@ const { promisify } = require('util')
  * TODO: Add SQL injection protection (maybe regex?)
  * TODO: Parameterized queries
  * TODO: Multi query detection
+ * 
+ * Look at https://github.com/boyzoid/sql-template-tag-demo/blob/main/src/index.js for ideas
+ */
+
+/** 
+ * Functions to program
+ * [Show] Get by name
+ * [Show] Get by Id
+ * [Show] Exists
+ * [Cue] Get Cue
+ * [Cue] Create Cue
+ * [Cue] Get cue by id
  */
 
 class DB {
@@ -37,10 +49,10 @@ class DB {
 
     this.DBQuery = promisify(this.connection.query).bind(this.connection)
 
-  
+
     // Usage
     const userInput = "Alice'; DROP TABLE users;";
-    const sanitizedInput = this.connection.escape(userInput)    
+    const sanitizedInput = this.connection.escape(userInput)
     console.log("Sanitized input:", sanitizedInput);
 
     this.#init() // Makes sure that the database schema is in place so that the program does not crash when the schema is not present.
@@ -63,10 +75,90 @@ class DB {
     })
   }
 
+  /** 
+   * This function allows for general queries where required.
+   * This function will not be used as it provided a point for SQL injection
+  */
   async query(query) {
     let data = await this.DBQuery(query)
     return data
   }
+
+  /**
+   * All the show table related SQL queries
+   */
+
+  async show_getId(name) {
+
+  }
+
+  async show_getName(id) {
+
+  }
+
+  async show_create(name) {
+    // Return showId
+
+  }
+
+  async show_delete(id, name) {
+    // Delete all other entries in the database related to that show? 
+  }
+
+  /**
+   * All the audio table related queries
+  */
+
+  async audio_getCue(_id, showId) {
+    // Return all the config for that audioCue
+  }
+
+  async audio_createCue(showId, filePath) {
+    // Return cue id
+  }
+
+  async audio_deleteCue(_id, showId) {
+
+  }
+
+  async audio_updateFilePath(_id, newFilePath) {
+
+  }
+
+  async audio_updatePreWait(_id, preWait) {
+
+  }
+
+  async audio_updateFadeIn(_id, fadeIn) {
+
+  }
+
+  async audio_updateFadeOut(_id, fadeOut) {
+
+  }
+
+  async audio_updatePostWait(_id, postWait) {
+
+  }
+
+  async audio_updateVolume(_id, volume) {
+
+  }
+
+  /**
+   * For all the midi cue's SQL queries
+   */
+
+  async midi_getCue(_id, showId) {
+    // Return all values
+  }
+
+  
+
+
+
+
+
 }
 
 module.exports = { DB }
