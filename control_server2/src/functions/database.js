@@ -51,9 +51,9 @@ class DB {
 
 
     // Usage
-    const userInput = "Alice'; DROP TABLE users;";
-    const sanitizedInput = this.connection.escape(userInput)
-    console.log("Sanitized input:", sanitizedInput);
+    // const userInput = "Alice'; DROP TABLE users;";
+    // const sanitizedInput = this.connection.escape(userInput)
+    // console.log("Sanitized input:", sanitizedInput); 
 
     this.#init() // Makes sure that the database schema is in place so that the program does not crash when the schema is not present.
   }
