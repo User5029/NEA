@@ -22,8 +22,6 @@ async function start() {
   await database.connect()
 }
 
-// Test
-
 start()
 
 database.DBQuery(`INSERT INTO NEA.show (show_name) VALUES (?);`, ");DROP TABLE show;--")
