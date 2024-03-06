@@ -304,13 +304,17 @@ namespace UnityCore
                         // Check to see if the audio needs to be faded in
                         if (Aud2_FadeInNeeded > 0)
                         {
-                            Aud2_SubState = AudioSubStates.FadeIn;
+                            // If it needs to be faded in it will run this code
+                            Aud2_SubState = AudioSubStates.FadeIn; // Sets the status of the audio source to fading in
+                            // Updates the control server on the new status
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                            // Runs the FadeIn function
                             instance.StartCoroutine(FadeInCo("2", audio2, Aud2_FadeInNeeded));
                         }
                         else
                         {
-                            audio2.Play();
+                            // If the audio source does not needed to be faded in it wil play normally
+                            audio2.Play(); // Plays the audio
                             Aud2_SubState = AudioSubStates.Playing;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         }
