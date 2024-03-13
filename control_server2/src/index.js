@@ -12,14 +12,16 @@ Sets up the clients by passing various variables that may be required
 const client = new CLIENT()
 client.config = require('./config.json')
 const database = new DB(client)
-const WebSocket = new WEBSOCKET(client)
+const WebSocket = new WEBSOCKET(client, database)
 
 /**
- * The rest of the code for the 
+ * The rest of the code for the application goes here
  */
 
+
+// Function done when the program initially starts
 async function start() {
-  await database.connect()
+  await database.connect() // 
 }
 
 start()
