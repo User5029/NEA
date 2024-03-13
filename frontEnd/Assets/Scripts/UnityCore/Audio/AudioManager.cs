@@ -323,63 +323,94 @@ namespace UnityCore
             }
             public static void Pause(string[] _cmd)
             {
+                /*
+                    Tnis constrols if the audio source is paused or not
+                */
                 switch (_cmd[4])
                 {
+                    // If the audio source 1 is told to be paused
                     case "1":
+                        // Check to see if the audio source is not already paused
                         if (audio1.isPlaying == true)
                         {
-                            audio1.Pause();
-                            Aud1_SubState = AudioSubStates.Paused;
+                            // If the audio source is paused
+                            audio1.Pause(); // Pauses the audio
+                            Aud1_SubState = AudioSubStates.Paused; // Sets the status of the audio source to paused
                         }
                         else
                         {
-                            audio1.UnPause();
-                            Aud1_SubState = AudioSubStates.Playing;
+                            // If the audio source is already paused
+                            audio1.UnPause(); // Unpauses the audio source
+                            Aud1_SubState = AudioSubStates.Playing; // Sets the status of the audio source to playing
                         }
+                        // Sends the new status for the audio source to the control server
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         break;
+                    // If the audio source 2 is told to be paused
                     case "2":
+                        // Check to see if the audio source is already pasued
                         if (audio2.isPlaying == true)
                         {
-                            audio2.Pause();
-                            Aud2_SubState = AudioSubStates.Paused;
+                            // If the audio source is not already paused
+                            audio2.Pause(); // Pauses the audio
+                            Aud2_SubState = AudioSubStates.Paused; // Set the status of the audio source to paused
                         }
                         else
                         {
-                            audio2.UnPause();
-                            Aud2_SubState = AudioSubStates.Playing;
+                            // If the audio source is already paused
+                            audio2.UnPause(); // Unpauses the audio
+                            Aud2_SubState = AudioSubStates.Playing; // Set the status of the audio source to playing
                         }
-                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
+                        // Sends the status of the audio source 2 to the control server
+                        WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString()); 
                         break;
+
+                    // If told to pause both
                     case "ALL":
-                        audio1.Pause();
-                        audio2.Pause();
-                        Aud1_SubState = AudioSubStates.Paused;
-                        Aud2_SubState = AudioSubStates.Paused;
-                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
+                        /*
+                            This does not check to see if the audio sources are playing as this will be used as
+                            more of an emergency stop to the program
+                        */
+                        audio1.Pause(); // Pauses audio source 1
+                        audio2.Pause(); // Pauses audio source 2
+                        Aud1_SubState = AudioSubStates.Paused; // Sets the status of audio source 1 to paused
+                        Aud2_SubState = AudioSubStates.Paused; // Sets the status of audio source 2 to paused
+
+                        // Send the status of audio source 1 + 2 to the control server
+                        WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString()); 
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                 }
             }
             public static void Stop(string[] _cmd)
             {
+                /*
+                    This stoppes the audio source so if it is played again it start from the beginning
+                */
                 switch (_cmd[4])
                 {
+                    // If the first audio source is told to be stopped
                     case "1":
-                        audio1.Stop();
-                        Aud1_SubState = AudioSubStates.Stopped;
+                        audio1.Stop(); // The audio source is stopped
+                        Aud1_SubState = AudioSubStates.Stopped; // The status of audio source 1 is set to stopped
+
+                        // The status of the audio source is sent to the control server
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         break;
                     case "2":
-                        audio2.Stop();
-                        Aud1_SubState = AudioSubStates.Stopped;
+                        audio2.Stop(); // The audio source is stopped
+                        Aud1_SubState = AudioSubStates.Stopped; // The status of audio source 2 is set to stopped
+
+                        // The status of the audio source is sent to the control server
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
                     case "ALL":
-                        audio1.Stop();
-                        audio2.Stop();
-                        Aud1_SubState = AudioSubStates.Stopped;
-                        Aud1_SubState = AudioSubStates.Stopped;
+                        audio1.Stop(); // The audio source is stopped
+                        audio2.Stop(); // The audio source is stopped
+                        Aud1_SubState = AudioSubStates.Stopped; // The status of audio source 1 is set to stopped
+                        Aud1_SubState = AudioSubStates.Stopped; // The status of audio source 2 is set to stopped
+
+                        // The status of the audio source is sent to the control server
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         break;
@@ -387,8 +418,13 @@ namespace UnityCore
             }
             public static IEnumerator FadeInCo(string AudNum, AudioSource audioSource, float FadeTime)
             {
-                audioSource.volume = 0.1f;
-                audioSource.Play();
+                /*
+                    This function is used to perform the nessessary maths to fadeIn the music 
+                */
+                audioSource.volume = 0.1f; // Sets the starting volume to 10%
+                audioSource.Play(); // Plays the audio
+
+                // Runs the loop while the volume is less than 100%
                 while (audioSource.volume < 1)
                 {
                     //audioSource.volume += startVolume * Time.deltaTime / FadeTime;
@@ -397,8 +433,14 @@ namespace UnityCore
                     yield return null;
                 }
 
+                
+                /*
+                    Used to set the audio source that was used to fade in to say that the fading in has 
+                    stopped and that it is now playing normally
+                */
                 switch (AudNum)
                 {
+                    // If the audio source 
                     case "1":
                         Aud1_SubState = AudioSubStates.Playing;
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
