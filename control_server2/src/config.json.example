@@ -1,8 +1,0 @@
-{
-    "mariadb": {
-        "host": "",
-        "user": "",
-        "password": "",
-        "database": ""
-    }
-}

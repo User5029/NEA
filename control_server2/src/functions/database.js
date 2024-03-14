@@ -32,7 +32,8 @@ class DB {
       host: this.client.config.mariadb.host,
       user: this.client.config.mariadb.user,
       password: this.client.config.mariadb.password,
-      database: this.client.config.mariadb.database
+      database: this.client.config.mariadb.database,
+      port: this.client.config.mariadb.port
 
     })
   }
@@ -48,6 +49,7 @@ class DB {
     });
 
     this.DBQuery = promisify(this.connection.query).bind(this.connection)
+
 
 
     // Usage
@@ -80,8 +82,12 @@ class DB {
    * This function will not be used as it provided a point for SQL injection
   */
   async query(query) {
-    let data = await this.DBQuery(query)
-    return data
+    if (this.config.dbType === "mysql") {
+      let data = await this.DBQuery(query)
+      return data
+    } else if (this.config.dbType === "sqlite") {
+
+    }
   }
 
   /**
@@ -153,7 +159,7 @@ class DB {
     // Return all values
   }
 
-  
+
 
 
 
