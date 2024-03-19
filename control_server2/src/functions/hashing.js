@@ -29,7 +29,7 @@ class HASHING {
         if(num === Infinity){
             num = Math.sqrt(sum)*Math.sqrt(tot)*0.5
         }
-        let slot = num % 98765234
+        let slot = num % 52637
         slot = Math.floor(slot)
 
         return slot
