@@ -1,4 +1,5 @@
-const mysql = require('mysql')
+//const mysql = require('mysql')
+const sqlite3 = require('sqlite3').verbose()
 const fs = require('fs')
 const { promisify } = require('util')
 
@@ -23,58 +24,37 @@ const { promisify } = require('util')
 class DB {
   // This is executed when the class is first added to the 
   constructor(client) {
-    this.establishedConnection = null;
-    this.client = client // Allows anything in the client object to be refernced in this class
+    this.db = new sqlite3.Database('./db.sqlite3')
 
-
-    // Creates the database configuration using the config provided by the client class
-    this.connection = mysql.createConnection({
-      host: this.client.config.mariadb.host,
-      user: this.client.config.mariadb.user,
-      password: this.client.config.mariadb.password,
-      database: this.client.config.mariadb.database,
-      port: this.client.config.mariadb.port
-
-    })
+    this.#init()
   }
 
-  // Function to create the database connection and will perform some prechecks before the user starts
-  connect() {
-    this.connection.connect(function (err) {
-      if (err) {
-        console.error(`[Database] Error Connecting` + err.stack);
-        return;
-      }
-      console.log(`[Database] Connected`);
-    });
-
-    this.DBQuery = promisify(this.connection.query).bind(this.connection)
-
-
-
-    // Usage
-    // const userInput = "Alice'; DROP TABLE users;";
-    // const sanitizedInput = this.connection.escape(userInput)
-    // console.log("Sanitized input:", sanitizedInput); 
-
-    this.#init() // Makes sure that the database schema is in place so that the program does not crash when the schema is not present.
-  }
 
   /**
    * This function executes in the background to hide the task from the main program
    * The '#' before the name of the function makes it a private function 
    */
   async #init() {
-    const dataSql = fs.readFileSync("./src/functions/data.sql", "utf-8"); // Gets the data from the file and decodes using utf-8
-    const queries = dataSql.split(';'); // Splits whole schema into smaller schemas to be executed individually
-    // cycles through all the table schemas and executes the query
-    queries.forEach((query) => {
-      if (query.trim() !== '') {
-        this.connection.query(query, (error, results, fields) => {
-          if (error) throw error; // Voids any errors so that the program does not crash
-        });
-      }
-    })
+    const dataSql = fs.readFileSync('./src/functions/data.sql').toString();
+    const dataArr = dataSql.toString().split(');');
+
+    this.db.serialize(() => {
+      // db.run runs your SQL query against the DB
+      this.db.run('PRAGMA foreign_keys=OFF;');
+      this.db.run('BEGIN TRANSACTION;');
+      // Loop through the `dataArr` and db.run each query
+      dataArr.forEach((query) => {
+        if(query) {
+          // Add the delimiter back to each query before you run them
+          // In my case the it was `);`
+          query += ');';
+          this.db.run(query, (err) => {
+             if(err) throw err;
+          });
+        }
+      });
+      this.db.run('COMMIT;');
+    });
   }
 
   /** 
@@ -82,12 +62,13 @@ class DB {
    * This function will not be used as it provided a point for SQL injection
   */
   async query(query) {
-    if (this.config.dbType === "mysql") {
-      let data = await this.DBQuery(query)
-      return data
-    } else if (this.config.dbType === "sqlite") {
-
-    }
+    this.db.all(query, [], (err, rows) => {
+      if (err) {
+        console.log(err)
+        throw err
+      }
+      return rows
+    })
   }
 
   /**
@@ -95,11 +76,31 @@ class DB {
    */
 
   async show_getId(name) {
-
+    this.db.all(`SELECT * FROM show WHERE show_name = '${name}'`, [], (err, rows) => {
+      if (err) {
+        console.log(err)
+        throw err
+      }
+      if (rows.length > 0){
+        return rows[0]._id
+      } else {
+        return null
+      }
+    })
   }
 
   async show_getName(id) {
-
+    this.db.all(`SELECT * FROM show WHERE _id = '${id}'`, [], (err, rows) => {
+      if (err) {
+        console.log(err)
+        throw err
+      }
+      if (rows.length > 0){
+        return rows[0].show_name
+      } else {
+        return null
+      }
+    })
   }
 
   async show_create(name) {

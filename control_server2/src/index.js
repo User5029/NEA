@@ -12,8 +12,8 @@ Sets up the clients by passing various variables that may be required
 
 const hash = new HASHING()
 const client = new CLIENT()
-client.config = require('./config.json')
-//const database = new DB(client)
+//client.config = require('./config.json')
+const database = new DB(client)
 //const WebSocket = new WEBSOCKET(client, database)
 
 
@@ -33,7 +33,7 @@ test()
 
 // Function done when the program initially starts
 async function start() {
-  //await database.connect() // 
+  //await DB.connect() // Establishes a connection to the database.
 }
 
 start()
