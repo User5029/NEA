@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS audio (
     fadeIn   REAL    DEFAULT (0) NOT NULL,
     fadeOut  REAL    NOT NULL DEFAULT (0),
     postWait REAL    DEFAULT (0) NOT NULL,
-    volume   REAL    DEFAULT (0.9)  NOT NULL
+    volume   REAL    DEFAULT (0.8)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS midi (
