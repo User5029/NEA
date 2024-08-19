@@ -27,6 +27,7 @@ class DB {
     this.db = new sqlite3.Database('./db.sqlite3')
 
     this.#init()
+    this.show_create("test")
   }
 
 
@@ -105,11 +106,54 @@ class DB {
 
   async show_create(name) {
     // Return showId
+    this.db.all(`INSERT INTO show (show_name) VALUES (?)`, [name], (err, rows) => {
+      if(err){
+        console.log(err)
+        throw err
+      }
+    })
+    this.db.all(`SELECT _id FROM show WHERE show_name = ?`, [name], (err, rows) => {
+      if(err){
+        console.log(err)
+        throw err
+      }
+      return rows[0]._id
+    })
 
   }
 
   async show_delete(id, name) {
-    // Delete all other entries in the database related to that show? 
+    // Deletes everything from the database when a show gets deleted
+
+    //Below checks that the name of the show matches the id
+    if (this.show_getName(id) !== name) return "Error, name does not match id"
+    this.db.all(`DELETE FROM cue WHERE show_id = ?`, [id], (err) => {
+      if(err){
+        console.log(err)
+        throw(err)
+      }
+    })
+    this.db.all(`DELETE FROM midi WHERE show_id = ?`, [id], (err) => {
+      if(err){
+        console.log(err)
+        throw(err)
+      }
+    })
+    this.db.all(`DELETE FROM audio WHERE show_id = ?`, [id], (err) => {
+      if(err){
+        console.log(err)
+        throw(err)
+      }
+    })
+    this.db.all(`DELETE FROM show WHERE show_id = ?`, [id], (err) => {
+      if(err){
+        console.log(err)
+        throw(err)
+      }
+    })
+
+    return true
+
   }
 
   /**
