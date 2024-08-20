@@ -1,10 +1,12 @@
-const prompts = require('prompts')
+//const prompts = require('prompts')
 
-
+const term = require('serverline')
 
 class TERMINAL {
-    constructor() {
-        process.stdout.write("Terminal Online\n");
+    constructor(client) {
+        this.client = client;
+        term.init()
+        term.setPrompt('> ')
     }
 
     async write(text){
@@ -13,13 +15,6 @@ class TERMINAL {
     }
 
     async ask(question){
-        const response = await prompts({
-            type: 'text',
-            name: 'question',
-            message: question
-        });
-
-        return response.question
     }
 
 

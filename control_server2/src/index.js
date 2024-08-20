@@ -15,20 +15,21 @@ const hash = new HASHING()
 const client = new CLIENT()
 const database = new DB(client)
 //const WebSocket = new WEBSOCKET(client, database)
-const terminal = new TERMINAL()
+//const terminal = new TERMINAL(client)
 
 setTimeout(async () => {
-  //console.log(await database.show_create("Bob"))
-  //console.log(await database.show_getName(4))
-  //console.log(await database.show_getId("juhiudfhihi"))
-  //console.log(await database.show_getName(46879756))
-  //console.log(await database.audio_createCue(11, "C:/abc.test"))
-  console.log(await terminal.ask(`Hello, what is your name?`))
-  console.log("aye")
-}, 1000)
+  var prompt = require('prompt-sync')();
+  //
+  // get input from the user.
+  //
+  var n = prompt('How many more times? ');
+
+  console.log(n); // { username: 'jonschlinkert' }
+
+}, 100)
 
 setTimeout(() => {
-  console.log("rest of program")  
+  console.log("rest of program")
 }, 1500);
 
 
