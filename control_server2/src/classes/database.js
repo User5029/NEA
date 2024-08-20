@@ -4,9 +4,9 @@ const fs = require('fs')
 const { promisify } = require('util')
 
 /**
- * TODO: Add SQL injection protection (maybe regex?)
- * TODO: Parameterized queries
- * TODO: Multi query detection
+ * DONE: Add SQL injection protection (maybe regex?)
+ * DONE: Parameterized queries
+ * TODO: Add better error messages
  * 
  * Look at https://github.com/boyzoid/sql-template-tag-demo/blob/main/src/index.js for ideas
  */
@@ -24,7 +24,7 @@ const { promisify } = require('util')
 class DB {
   // This is executed when the class is first added to the 
   constructor(client) {
-    this.db = new sqlite3.Database('./db.sqlite3', (err) => {
+    this.db = new sqlite3.Database('./src/data/db.sqlite3', (err) => {
       if (err) {
         console.log(err)
         throw err
@@ -41,7 +41,7 @@ class DB {
    * The '#' before the name of the function makes it a private function 
    */
   async #init() {
-    const dataSql = fs.readFileSync('./src/functions/data.sql').toString();
+    const dataSql = fs.readFileSync('./src/data/data.sql').toString();
     const dataArr = dataSql.toString().split(');');
 
     this.db.serialize(() => {

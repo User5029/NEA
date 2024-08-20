@@ -1,10 +1,11 @@
 /*
 Imports all the managers and client needed to run the program
 */
-const { DB } = require('./functions/database')
-const { CLIENT } = require('./functions/client')
-const { WEBSOCKET } = require('./functions/websocket')
-const { HASHING } = require('./functions/hashing')
+const { DB } = require('./classes/database')
+const { CLIENT } = require('./classes/client')
+const { WEBSOCKET } = require('./classes/websocket')
+const { HASHING } = require('./classes/hashing')
+const { TERMINAL } = require('./classes/terminal')
 
 /*
 Sets up the clients by passing various variables that may be required
@@ -12,17 +13,23 @@ Sets up the clients by passing various variables that may be required
 
 const hash = new HASHING()
 const client = new CLIENT()
-//client.config = require('./config.json')
 const database = new DB(client)
 //const WebSocket = new WEBSOCKET(client, database)
+const terminal = new TERMINAL()
 
 setTimeout(async () => {
   //console.log(await database.show_create("Bob"))
   //console.log(await database.show_getName(4))
   //console.log(await database.show_getId("juhiudfhihi"))
   //console.log(await database.show_getName(46879756))
-  console.log(await database.audio_createCue(11, "C:/abc.test"))
+  //console.log(await database.audio_createCue(11, "C:/abc.test"))
+  console.log(await terminal.ask(`Hello, what is your name?`))
+  console.log("aye")
 }, 1000)
+
+setTimeout(() => {
+  console.log("rest of program")  
+}, 1500);
 
 
 async function test() {
