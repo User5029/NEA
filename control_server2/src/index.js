@@ -5,7 +5,7 @@ const { DB } = require('./classes/database')
 const { CLIENT } = require('./classes/client')
 const { WEBSOCKET } = require('./classes/websocket')
 const { HASHING } = require('./classes/hashing')
-const { TERMINAL } = require('./classes/terminal')
+const { TERMINAL, term} = require('./classes/terminal')
 
 /*
 Sets up the clients by passing various variables that may be required
@@ -14,18 +14,21 @@ Sets up the clients by passing various variables that may be required
 const hash = new HASHING()
 const client = new CLIENT()
 const database = new DB(client)
-//const WebSocket = new WEBSOCKET(client, database)
-//const terminal = new TERMINAL(client)
+const WebSocket = new WEBSOCKET(client, database)
+const terminal = new TERMINAL(client, database, WebSocket)
 
 setTimeout(async () => {
-  var prompt = require('prompt-sync')();
-  //
-  // get input from the user.
-  //
-  var n = prompt('How many more times? ');
+  term.on('line', function (line) {
+    console.log('CMD: ' + line)
+    line = line.split(' ')
+    if(line[0].toLowerCase() === 'show'){
+        terminal.show(line)
+    }
+})
 
-  console.log(n); // { username: 'jonschlinkert' }
-
+term.on('SIGINT', function (rl) {
+    rl.question('Confirm exit (y/N): ', (answer) => answer.match(/^y(es)?$/i) ? process.exit(0) : rl.output.write('\x1B[1K> '))
+})
 }, 100)
 
 setTimeout(() => {

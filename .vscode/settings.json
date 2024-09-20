@@ -1,3 +1,12 @@
 {
-  "dotnet.defaultSolution": "disable"
+  "dotnet.defaultSolution": "disable",
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "NEA",
+      "database": "${workspaceFolder:NEA}/control_server2/db.sqlite3"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
 }
