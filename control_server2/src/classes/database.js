@@ -180,6 +180,18 @@ class DB {
 
   }
 
+  async show_listall() {
+
+    let err,res = await this.queryAll('SELECT show_name FROM show')
+    if(err){
+      console.log(err)
+      throw err
+    } else {
+      return res
+    }
+
+  }
+
   /**
    * All cues in general
    */

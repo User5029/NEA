@@ -5,7 +5,8 @@ const { DB } = require('./classes/database')
 const { CLIENT } = require('./classes/client')
 const { WEBSOCKET } = require('./classes/websocket')
 const { HASHING } = require('./classes/hashing')
-const { TERMINAL, term} = require('./classes/terminal')
+const { TERMINAL, term } = require('./classes/terminal')
+const utils = require('./utils/utils')
 
 /*
 Sets up the clients by passing various variables that may be required
@@ -19,20 +20,20 @@ const terminal = new TERMINAL(client, database, WebSocket)
 
 setTimeout(async () => {
   term.on('line', function (line) {
-    console.log('CMD: ' + line)
+    line = line.toLowerCase()
+    //console.log('CMD: ' + line)
     line = line.split(' ')
-    if(line[0].toLowerCase() === 'show'){
-        terminal.show(line)
-    }
-})
+    TermCommands(line)
+  }, 100)
 
-term.on('SIGINT', function (rl) {
+  term.on('SIGINT', function (rl) {
     rl.question('Confirm exit (y/N): ', (answer) => answer.match(/^y(es)?$/i) ? process.exit(0) : rl.output.write('\x1B[1K> '))
-})
+  })
 }, 100)
 
 setTimeout(() => {
   console.log("rest of program")
+  main()
 }, 1500);
 
 
@@ -44,16 +45,34 @@ async function test() {
 
 
 
+
 /**
  * The rest of the code for the application goes here
  */
 
+async function main() { }
 
-// Function done when the program initially starts
-async function start() {
-  //await DB.connect() // Establishes a connection to the database.
+
+async function TermCommands(_cmd) {
+  switch (_cmd[0]) {
+    case 'show':
+      switch (_cmd[1]) {
+        case 'create':
+          let exists = await database.show_getId(_cmd[2])
+          if (exists !== null) {
+            console.log('[ERROR] A show already exists with this name')
+          } else {
+            let showId = await database.show_create(_cmd[2])
+            client.show_id = showId
+            console.log(`Your show: ${_cmd[2]} has a show ID of: ${showId}`)
+          }
+          break
+
+        case 'list':
+          let data = await database.show_listall()
+          console.log(data)
+          break
+      }
+  }
 }
 
-start()
-
-//database.DBQuery(`INSERT INTO NEA.show (show_name) VALUES (?);`, ");DROP TABLE show;--")

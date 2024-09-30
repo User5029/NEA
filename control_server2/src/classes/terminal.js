@@ -1,16 +1,15 @@
 //const prompts = require('prompts')
 
 const term = require('serverline')
+const { database } = require('../index')
 
 let commands = []
 
-
-
 class TERMINAL {
-    constructor(client, database, websocket) {
-        this.client = client;
-        this.datsabase = database;
-        this.websocket = websocket;
+    constructor() {
+        // this.client = client;
+        // this.database = database;
+        // this.websocket = websocket;
         this.#init()
     }
 
@@ -26,18 +25,7 @@ class TERMINAL {
         term.setCompletion(commands)
         term.setPrompt('> ')
     }
-
-    async show(_cmd){
-        console.log(_cmd)
-        _cmd = _cmd.shift(1)
-        console.log(_cmd)
-    }
-
-    async ask(question) {
-    }
-
-
 }
 
 
-module.exports = { TERMINAL, term}
+module.exports = { TERMINAL, term }
