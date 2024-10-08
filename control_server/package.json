@@ -11,7 +11,7 @@
   "author": "James Haswell",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.21.0",
     "ws": "^8.13.0"
   }
 }
