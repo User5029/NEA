@@ -177,12 +177,11 @@ class DB {
     await this.query(`DELETE FROM audio WHERE show_id = ?`, [id])
 
     return true
-
   }
 
   async show_listall() {
 
-    let err,res = await this.queryAll('SELECT show_name FROM show')
+    let err,res = await this.query('SELECT show_name FROM show')
     if(err){
       console.log(err)
       throw err
