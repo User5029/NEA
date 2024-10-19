@@ -52,7 +52,6 @@ setTimeout(() => {
  */
 
 async function main() {
-  console.log(client.show_id)
 }
 
 
@@ -88,12 +87,19 @@ async function TermCommands(_cmd) {
             } else {
               return console.log("This show does not exist please use 'show create' to make a show")
             }
-            let loadData = database.query(`SELECT filePath FROM audio WHERE show_id = ?`, [client.show_id])
-            let i = 0
-            while(i < length(loadData)){
-
+            let loadData = await database.audio_getAllCues(client.show_id)
+            console.log(loadData)
+            console.log("Checking show data ... ")
+            for(let tmpdata of loadData){
+              if(!fs.existsSync(cueFile[2])){
+                console.log(`File: ${cueFile}, does not exist error!`)
+              } else {
+                console.log(`Checks out`)
+              }
             }
 
+            console.log(`Data loaded successfully`)
+            break
 
             
 

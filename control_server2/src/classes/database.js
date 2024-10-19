@@ -74,6 +74,7 @@ class DB {
     return new Promise(function (resolve, reject) {
       that.db.all(query, paramsArr, function (error, result) {
         if (error) {
+          console.log(error)
           reject(error);
         } else {
           resolve(result[0]);
@@ -104,9 +105,9 @@ class DB {
    * MISC Functions
    */
 
-  async getLastId(){
-    let err,result = await this.query(`SELECT last_insert_rowid()`)
-    if(err){
+  async getLastId() {
+    let err, result = await this.query(`SELECT last_insert_rowid()`)
+    if (err) {
       console.log(err)
       throw (err)
     }
@@ -181,8 +182,8 @@ class DB {
 
   async show_listall() {
 
-    let err,res = await this.query('SELECT show_name FROM show')
-    if(err){
+    let err, res = await this.query('SELECT show_name FROM show')
+    if (err) {
       console.log(err)
       throw err
     } else {
@@ -269,7 +270,18 @@ class DB {
   async audio_getCue(_id, showId) {
     if (!_id || !showId) return;
 
-    let err, result = await this.query(`SELECT * FROM audo WHERE _id = ? AND show_id = ?`, [_id, showId])
+    let err, result = await this.query(`SELECT * FROM audio WHERE _id = ? AND show_id = ?`, [_id, showId])
+    if (err) {
+      console.log(err)
+      throw err
+    }
+    return result
+  }
+
+  async audio_getAllCues(showId) {
+    if (!showId) return;
+
+    let err, result = await this.queryAll(`SELECT * FROM audio WHERE AND show_id = ?`, [showId])
     if (err) {
       console.log(err)
       throw err
@@ -281,21 +293,21 @@ class DB {
     if (!showId || !filePath) return;
 
     let err = await this.query(`INSERT INTO audio (show_id, filePath, preWait, fadeIn, fadeOut, postWait, volume) VALUES (?,?,?,?,?,?,?)`, [showId, filePath, preWait, fadeIn, fadeOut, postWait, volume])
-    if(err){
+    if (err) {
       console.log(err)
       throw err
     }
-    
+
     return this.getLastId()
 
   }
 
   async audio_deleteCue(_id, showId) {
-    if(!_id || !showId) return;
+    if (!_id || !showId) return;
 
     let err = await this.query(`DELETE FROM audio WHERE _id = ? AND show_id = ?`, [_id, showId])
 
-    if(err){
+    if (err) {
       console.log(err)
       throw err
     }
@@ -304,71 +316,71 @@ class DB {
   }
 
   async audio_updateFilePath(_id, newFilePath) {
-    if(!_id || !newFilePath) return;
+    if (!_id || !newFilePath) return;
 
     let err = await this.query(`UPDATE audio SET filePath = ? WHERE _id = ? `, [newFilePath, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
   }
 
   async audio_updatePreWait(_id, preWait) {
-    if(!_id || !preWait) return;
+    if (!_id || !preWait) return;
 
     let err = await this.query(`UPDATE audio SET preWait = ? WHERE _id = ? `, [preWait, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
 
   }
 
   async audio_updateFadeIn(_id, fadeIn) {
-    if(!_id || !fadeIn) return;
+    if (!_id || !fadeIn) return;
 
     let err = await this.query(`UPDATE audio SET fadeIn = ? WHERE _id = ? `, [fadeIn, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
 
   }
 
   async audio_updateFadeOut(_id, fadeOut) {
-    if(!_id || !fadeOut) return;
+    if (!_id || !fadeOut) return;
 
     let err = await this.query(`UPDATE audio SET fadeOut = ? WHERE _id = ? `, [fadeOut, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
 
   }
 
   async audio_updatePostWait(_id, postWait) {
-    if(!_id || !postWait) return;
+    if (!_id || !postWait) return;
 
     let err = await this.query(`UPDATE audio SET postWait = ? WHERE _id = ? `, [postWait, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
 
   }
 
   async audio_updateVolume(_id, volume) {
-    if(!_id || !volume) return;
+    if (!_id || !volume) return;
 
     let err = await this.query(`UPDATE audio SET volume = ? WHERE _id = ? `, [volume, _id])
-    if(err){
+    if (err) {
       console.log(err)
-      throw(err)
+      throw (err)
     }
     return true
 
