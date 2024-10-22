@@ -390,4 +390,6 @@ class DB {
 
 }
 
+let a = true
+
 module.exports = { DB }

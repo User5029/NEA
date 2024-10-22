@@ -52,6 +52,28 @@ setTimeout(() => {
  */
 
 async function main() {
+  e('Query')
+  e(database.query('SELECT * FROM show'))
+  e('Queryall')
+  e(database.queryAll('SELECT * FROM show'))
+  e('Show Create')
+  e(database.show_create('test221024'))
+  e('Get Last ID')
+  e(database.getLastId())
+  e('Show list')
+  e(database.show_listall())
+  e('ID of "Bob"')
+  let tmpdata1 = database.show_getId('Bob')
+  e(tmpdata1)
+  e(`Name of ID ${tmpdata1}`)
+  e(database.show_getName(tmpdata1))
+
+
+    
+}
+
+async function e(_msg){
+  console.log(_msg)
 }
 
 
