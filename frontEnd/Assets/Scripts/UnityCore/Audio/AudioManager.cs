@@ -10,6 +10,7 @@ using NAudio.Gui.TrackView;
 using UnityCore.Audio;
 using System.Linq;
 using System.Collections.Generic;
+using TMPro;
 
 namespace UnityCore
 {
@@ -22,6 +23,10 @@ namespace UnityCore
             public static AudioManager Instance;
 
             public static SongNAudio SongNAudio;
+
+            // The text area
+            public TextMeshProUGUI Source1Text;
+            public TextMeshProUGUI Source2Text;
 
 
             #region variables
@@ -143,6 +148,9 @@ namespace UnityCore
                 //string msg = "to,from,audio,arm,1,1,test,c:/music/test3.mp3";
                 //string[] data = msg.Split(char.Parse(","));
                 //Arm(data, data);
+
+                Source1Text.text = "00:00:00\nUnarmed";
+                Source2Text.text = "00:00:00\nUnarmed";
 
             }
 

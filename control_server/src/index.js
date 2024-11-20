@@ -33,8 +33,43 @@ setTimeout(async () => {
 }, 100)
 
 setTimeout(() => {
-  console.log("rest of program")
-  main()
+  const WebSocket = require('ws')
+const wss = new WebSocket.Server({ port: 8080 }, () => {
+   console.log('server started')
+})
+
+let counter = 0
+wss.on('connection', function connection(ws) {
+   console.log("Client Connected.")
+   ws.on('message', (data, isBinary) => {
+      const message = isBinary ? data : data.toString();
+      let cmd = message.split(',');
+      console.log(`To:${cmd[0]}, From: ${cmd[1]}, CMD: ${cmd[2]}`)
+
+      console.log('data received \n %o', message);
+      // setTimeout(() => {
+      //    ws.send(message)
+      // }, 1000)
+      if (message === "001,002,CUEREQ,REQUEST,1,1") {
+         ws.send('002,001,audio,arm,1,1,test,c:/a.mp3,0,0,5');
+      }
+
+      // if(counter === 0){
+      //    ws.send('001,000,audio,arm,1,1,test,c:/music/test2.mp3,0,0,0,0');
+      //    counter = counter + 1
+      // } else if(counter === 1){
+      //    ws.send('c:/music/test.mp3')
+      //    counter = 0
+      // }
+   })
+})
+wss.on('listening', () => {
+   console.log('listening on 8080');
+})
+
+wss.on('error', (data) => {
+   console.log('Client disconnected.')
+})
 }, 1500);
 
 
@@ -42,6 +77,8 @@ setTimeout(() => {
 //   let reply = await hash.hash("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.")
 //   console.log(reply)
 // }
+
+
 
 
 

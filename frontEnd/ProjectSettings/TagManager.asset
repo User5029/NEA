@@ -9,6 +9,8 @@ TagManager:
   - AudManager
   - audio1
   - audio2
+  - audio1-text
+  - audio2-text
   layers:
   - Default
   - TransparentFX
