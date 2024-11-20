@@ -1,17 +1,16 @@
 {
-  "name": "control_server",
-  "version": "0.0.1",
-  "description": "The control server for my CS_NEA project Audio Cue System",
-  "main": "./src/index.js",
+  "name": "control_server2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pkg ./src/index.js --targets node16-win-x64 -o ./output/windows.exe",
-    "pack": "pkg ./src/index.js --targets node16-win-x64,node16-macos-x64 --out-path ./output "
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "James Haswell",
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0",
+    "serverline": "^1.6.0",
+    "sqlite3": "^5.1.7",
     "ws": "^8.17.1"
   }
 }
