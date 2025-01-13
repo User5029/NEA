@@ -207,6 +207,10 @@ class DB {
     return result
   }
 
+  
+  /*
+This query returns all the cues for a specific show as well as the name of the show. This query is useful in returning the show name without the need to run another query to obtain the name.
+  */
   async cue_getAllIncName(showId) {
     if (!showId) return -1
 
