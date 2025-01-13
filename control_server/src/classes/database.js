@@ -207,6 +207,17 @@ class DB {
     return result
   }
 
+  async cue_getAllIncName(showId) {
+    if (!showId) return -1
+
+    let err, result = await this.queryAll(`SELECT * FROM audio,show WHERE (show._id == audio.showId) and (show._id = ?) `, [showId])
+    if (err) {
+      console.log(err)
+      throw err
+    }
+    return result
+  }
+
   async cue_getId(showId, cueNum) {
     if (!showId || !cueNum) return;
 
