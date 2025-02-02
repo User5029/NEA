@@ -11,6 +11,9 @@ using UnityCore.Audio;
 using System.Linq;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
+using System.Drawing.Text;
+using System.Runtime.CompilerServices;
 
 namespace UnityCore
 {
@@ -27,6 +30,10 @@ namespace UnityCore
             // The text area
             public TextMeshProUGUI Source1Text;
             public TextMeshProUGUI Source2Text;
+            public Image Source1;
+            public Image Source2;
+            private string Source1TimeLeft;
+            private string Source2TimeLeft;
 
 
             #region variables
@@ -149,10 +156,23 @@ namespace UnityCore
                 //string[] data = msg.Split(char.Parse(","));
                 //Arm(data, data);
 
-                Source1Text.text = "00:00:00\nUnarmed";
-                Source2Text.text = "00:00:00\nUnarmed";
+                Source1TimeLeft = "?00:00:00";
+                Source2TimeLeft = "?00:00:00";
+
+                Source1Text.text = Source1TimeLeft + "\n" + Aud1_SubState.ToString();
+                Source2Text.text = Source2TimeLeft + "\n" + Aud2_SubState.ToString();
+
 
             }
+
+            // Colour Variables
+            private Color DisarmedColour = new Color32(96, 79, 230, 255);
+            private Color ArmingColour = new Color32(175, 0, 187, 255);
+            private Color ArmedColour = new Color32(0, 187, 65, 255);
+            private Color PlayingColour = new Color32(187, 131, 0, 255);
+            private Color WarningColour = new Color32(130, 0, 0, 255);
+            private Color FadingColour = new Color32(255, 217, 0, 255);
+
 
             // TMP Variables
             public static float Aud1_Time = -1;
@@ -170,10 +190,71 @@ namespace UnityCore
                 Aud1_Time = audio1.time;
                 Aud2_Time = audio2.time;
 
+                // Converts the float of time in seconds to a standard format
+                Source1TimeLeft = TimeSpan.FromSeconds(Aud1_Length - Aud1_Time).ToString(@"mm\:ss\:fff");
+                Source2TimeLeft = TimeSpan.FromSeconds(Aud2_Length - Aud2_Time).ToString(@"mm\:ss\:fff");
+
+                // Displays that code to the text on screen
+                Source1Text.text = Source1TimeLeft + "\n" + Aud1_SubState.ToString();
+                Source2Text.text = Source2TimeLeft + "\n" + Aud2_SubState.ToString();
+
+                if (Aud1_SubState == AudioSubStates.Disarmed)
+                {
+                    Source1.color = DisarmedColour;
+                }
+                else if (Aud1_SubState == AudioSubStates.Arming)
+                {
+                    Source1.color = ArmingColour;
+                }
+                else if (Aud1_SubState == AudioSubStates.Armed || Aud1_SubState == AudioSubStates.Ended)
+                {
+                    Source1.color = ArmedColour;
+                }
+                else if (Aud1_SubState == AudioSubStates.FadeIn || Aud1_SubState == AudioSubStates.FadeOut)
+                {
+                    Source1.color = FadingColour;
+                }
+                else if (Aud1_SubState == AudioSubStates.Playing)
+                {
+                    Source1.color = PlayingColour;
+                }
+                else if (Aud1_SubState == AudioSubStates.Warning)
+                {
+                    Source1.color = WarningColour;
+                }
+
+                if (Aud2_SubState == AudioSubStates.Disarmed)
+                {
+                    Source2.color = DisarmedColour;
+                }
+                else if (Aud2_SubState == AudioSubStates.Arming)
+                {
+                    Source2.color = ArmingColour;
+                }
+                else if (Aud2_SubState == AudioSubStates.Armed || Aud2_SubState == AudioSubStates.Ended)
+                {
+                    Source2.color = ArmedColour;
+                }
+                else if (Aud2_SubState == AudioSubStates.FadeIn || Aud2_SubState == AudioSubStates.FadeOut)
+                {
+                    Source2.color = FadingColour;
+                }
+                else if (Aud2_SubState == AudioSubStates.Playing)
+                {
+                    Source2.color = PlayingColour;
+                }
+                else if (Aud2_SubState == AudioSubStates.Warning)
+                {
+                    Source2.color = WarningColour;
+                }
+
+
+
+
                 // Audio 1 checker
                 if (audio1.isPlaying)
                 {
-                    
+
                     if (Aud1_Time + WarningTime > Aud1_Length || Aud1_Time + WarningTime == Aud1_Length)
                     {
                         if (Aud1_SubState != AudioSubStates.Warning && Aud1_SubState != AudioSubStates.FadeOut)
@@ -191,7 +272,8 @@ namespace UnityCore
                             WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
                             instance.StartCoroutine(FadeOutCo("1", audio1, Aud1_FadeOutNeeded));
                         }
-                    } else
+                    }
+                    else
                     {
                         //LogStatic((Aud1_Time + WarningTime) + "/" + Aud1_Length + " :: " + (Aud1_Time + WarningTime > Aud1_Length));
                     }
@@ -204,20 +286,24 @@ namespace UnityCore
                 // Audio 2 checker
                 if (audio2.isPlaying)
                 {
-                    return;
-                    if (Aud2_Time + WarningTime > Aud2_Length)
+
+                    if (Aud2_Time + WarningTime > Aud2_Length || Aud2_Time + WarningTime == Aud2_Length)
                     {
                         if (Aud2_SubState != AudioSubStates.Warning && Aud2_SubState != AudioSubStates.FadeOut)
                         {
                             Aud2_SubState = AudioSubStates.Warning;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                         }
-                        if (Aud2_Length - Aud2_FadeOutNeeded - 1 < Aud2_Time)
+                        if (Aud2_Length - Aud2_FadeOutNeeded <= Aud2_Time && Aud2_SubState != AudioSubStates.FadeOut)
                         {
                             Aud2_SubState = AudioSubStates.FadeOut;
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
                             instance.StartCoroutine(FadeOutCo("2", audio2, Aud2_FadeOutNeeded));
                         }
+                    }
+                    else
+                    {
+                        //LogStatic((Aud1_Time + WarningTime) + "/" + Aud1_Length + " :: " + (Aud1_Time + WarningTime > Aud1_Length));
                     }
                     if (Aud2_Time == Aud2_Length)
                     {
@@ -228,7 +314,7 @@ namespace UnityCore
             }
             #endregion
 
-            #region Audio Functions
+                #region Audio Functions
 
             public static void Disarm(string[] _cmd)
             {
@@ -407,7 +493,7 @@ namespace UnityCore
                         break;
                     case "2":
                         audio2.Stop(); // The audio source is stopped
-                        Aud1_SubState = AudioSubStates.Stopped; // The status of audio source 2 is set to stopped
+                        Aud2_SubState = AudioSubStates.Stopped; // The status of audio source 2 is set to stopped
 
                         // The status of the audio source is sent to the control server
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
@@ -530,13 +616,13 @@ namespace UnityCore
                         if (audio1.isPlaying == false) return;
                         Aud1_SubState = AudioSubStates.Reduced;
                         WSManager.Send_Status("1", Aud1_State.ToString(), Aud1_SubState.ToString());
-                        audio1.volume = 0.5f;
+                        audio1.volume = 0.1f;
                         break;
                     case "2":
                         if (audio2.isPlaying == false) return;
                         Aud2_SubState = AudioSubStates.Reduced;
                         WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                        audio2.volume = 0.5f;
+                        audio2.volume = 0.1f;
                         break;
                 }
             }
@@ -645,13 +731,21 @@ namespace UnityCore
                             Aud2_Cue = int.Parse(_cmd[5]);
                             Aud2_Name = _cmd[6];
                             Aud2_SubState = AudioSubStates.Arming;
-                            WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                            //instance.StartCoroutine(LoadSongCoroutine(audio1, _cmd[7]));
-                            Aud2_FadeInNeeded = int.Parse(_cmd[9]);
-                            Aud2_FadeOutNeeded = int.Parse(_cmd[10]);
+                            WSManager.Send_Status("2", Aud1_State.ToString(), Aud1_SubState.ToString());
+                            SongNAudio.toSet = "2";
+                            SongNAudio.path = _ocmd[7];
+                            while (SongNAudio.done == false) { }
+                            SongNAudio.done = false;
+                            LogStatic("2.1");
+                            Aud2_FadeInNeeded = int.Parse(newcmd[9]);
+                            LogStatic("2.2");
+                            Aud2_FadeOutNeeded = int.Parse(newcmd[10]);
+                            LogStatic("2.3");
                             Aud2_SubState = AudioSubStates.Armed;
+                            LogStatic("2.4");
+                            Debug.Log("Length: " + Aud2_Length + " FadeIn: " + Aud2_FadeInNeeded + " FadeOut: " + Aud2_FadeOutNeeded);
                             WSManager.Send_Status("2", Aud2_State.ToString(), Aud2_SubState.ToString());
-                            Aud2_Length = audio2.clip.length;
+
                             break;
                     }
                 }

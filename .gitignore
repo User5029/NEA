@@ -22,7 +22,6 @@ control_server/src/config.json
 /frontEnd/[Ll]ibrary/
 /frontEnd/[Tt]emp/
 /frontEnd/[Oo]bj/
-/frontEnd/[Bb]uild/
 /frontEnd/[Bb]uilds/
 /frontEnd/[Ll]ogs/
 /frontEnd/[Uu]ser[Ss]ettings/
@@ -30,7 +29,6 @@ control_server/src/config.json
 /frontEnd3d/[Ll]ibrary/
 /frontEnd3d/[Tt]emp/
 /frontEnd3d/[Oo]bj/
-/frontEnd3d/[Bb]uild/
 /frontEnd3d/[Bb]uilds/
 /frontEnd3d/[Ll]ogs/
 /frontEnd3d/[Uu]ser[Ss]ettings/

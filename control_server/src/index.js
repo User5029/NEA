@@ -53,6 +53,15 @@ wss.on('connection', function connection(ws) {
       if (message === "001,002,CUEREQ,REQUEST,1,1") {
          ws.send('002,001,audio,arm,1,1,test,c:/a.mp3,0,0,5');
       }
+      if (message === "001,002,CUEREQ,REQUEST,1,2") {
+        ws.send('002,001,audio,arm,1,1,test,c:/a.mp3,0,0,5');
+     }
+      if (message === "001,002,CUEREQ,REQUEST,2,1") {
+        ws.send('002,001,audio,arm,2,1,test,c:/a.mp3,0,0,5');
+     }
+     if (message === "001,002,CUEREQ,REQUEST,2,2") {
+      ws.send('002,001,audio,arm,2,1,test,c:/a.mp3,0,0,5');
+   }
 
       // if(counter === 0){
       //    ws.send('001,000,audio,arm,1,1,test,c:/music/test2.mp3,0,0,0,0');
