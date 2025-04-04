@@ -1776,6 +1776,12 @@
         <mxCell id="fZ7_3x0WM6aSfBnPRxNX-25" value="System Speakers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="230" y="80" width="120" height="60" as="geometry" />
         </mxCell>
+        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-27" value="Frontend Application" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="202.5" y="35" width="125" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-28" value="Control Server" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="515" y="35" width="125" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
