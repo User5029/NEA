@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="26.2.5" pages="8">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.2.8" pages="8">
   <diagram name="DB-Structure" id="_VM2OzUkt5WKcNDBvv1c">
     <mxGraphModel dx="712" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -1704,83 +1704,96 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="vp7Zw_sPsJl81-9x4eFU" name="Data Flow Diagram">
-    <mxGraphModel dx="1428" dy="743" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <diagram id="vp7Zw_sPsJl81-9x4eFU" name="Data Flow Diagram LVL 1">
+    <mxGraphModel dx="816" dy="425" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-13" value="" style="whiteSpace=wrap;html=1;aspect=fixed;dashed=1;dashPattern=1 4;" vertex="1" parent="1">
-          <mxGeometry x="140" y="65" width="250" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-3" value="" style="whiteSpace=wrap;html=1;aspect=fixed;dashed=1;dashPattern=1 4;" vertex="1" parent="1">
-          <mxGeometry x="455" y="65" width="250" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-9" value="" style="whiteSpace=wrap;html=1;aspect=fixed;dashed=1;dashPattern=1 4;" vertex="1" parent="1">
-          <mxGeometry x="355" y="350" width="140" height="140" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-5" value="Database" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="520" y="240" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-6" target="fZ7_3x0WM6aSfBnPRxNX-5">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-6" target="fZ7_3x0WM6aSfBnPRxNX-16">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-6" value="Websocket&lt;div&gt;Server&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="520" y="160" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-7" target="fZ7_3x0WM6aSfBnPRxNX-5">
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-1">
           <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-1" value="" style="image;html=1;image=img/lib/clip_art/computers/Database_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="485.0000000000001" y="69.5" width="50" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-2" target="-tvUM2E0FyoR2FPA_xmz-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-2" value="" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/generic_server.svg;" vertex="1" parent="1">
+          <mxGeometry x="287.5999999999999" y="180" width="44.8" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-8" target="-tvUM2E0FyoR2FPA_xmz-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-8" target="-tvUM2E0FyoR2FPA_xmz-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-8" value="" style="image;aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image=img/lib/active_directory/generic_server.svg;" vertex="1" parent="1">
+          <mxGeometry x="287.6" y="59" width="44.8" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-12" value="database" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="535.0000000000001" y="89.5" width="60" height="19" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-14" value="" style="shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#4495D1;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;shape=mxgraph.veeam.local_disk;" vertex="1" parent="1">
+          <mxGeometry x="483.9" y="192" width="57.2" height="56.8" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-15" value="Local Storage" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="541.1" y="210.9" width="60" height="19" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-16" target="-tvUM2E0FyoR2FPA_xmz-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-16" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.computer;pointerEvents=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="76.5" width="50" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-20" value="Websocket Connection" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="310" y="139" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-25" value="User loads/creates a show" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="69.5" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-26" value="Control Server handles database queries and show state management." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="332.4" y="50" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-27" value="FrontEnd grabs the referenced audio files from the database" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="230" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-29" value="Database stored on" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="504.99999999999994" y="139" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-30" value="" style="pointerEvents=1;verticalLabelPosition=bottom;shadow=0;dashed=0;align=center;html=1;verticalAlign=top;shape=mxgraph.electrical.electro-mechanical.loudspeaker;rotation=-180;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160.9" width="25" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.6;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;startFill=0;" edge="1" parent="1" target="-tvUM2E0FyoR2FPA_xmz-30">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="80" y="120" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="700" y="110" />
-              <mxPoint x="700" y="270" />
+              <mxPoint x="80" y="121" />
+              <mxPoint x="80" y="181" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-7" target="fZ7_3x0WM6aSfBnPRxNX-6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-7" value="Command Line" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="520" y="80" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-10" value="Local File System" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="365" y="390" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.892;entryY=-0.067;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-5" target="fZ7_3x0WM6aSfBnPRxNX-10">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-16" target="fZ7_3x0WM6aSfBnPRxNX-17">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-16" target="fZ7_3x0WM6aSfBnPRxNX-6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-16" value="Websocket&lt;div&gt;Client / WSManager&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="230" y="160" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-17" target="fZ7_3x0WM6aSfBnPRxNX-25">
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;startFill=0;" edge="1" parent="1" target="-tvUM2E0FyoR2FPA_xmz-30">
           <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="121" as="sourcePoint" />
             <Array as="points">
-              <mxPoint x="170" y="285" />
-              <mxPoint x="170" y="95" />
+              <mxPoint x="90" y="121" />
+              <mxPoint x="90" y="191" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-17" value="Audio Manager" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="230" y="240" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.125;entryY=-0.017;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classicThin;startFill=1;" edge="1" parent="1" source="fZ7_3x0WM6aSfBnPRxNX-17" target="fZ7_3x0WM6aSfBnPRxNX-10">
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.996;entryY=0.631;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classic;startFill=1;" edge="1" parent="1" source="-tvUM2E0FyoR2FPA_xmz-2" target="-tvUM2E0FyoR2FPA_xmz-16">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-25" value="System Speakers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="230" y="80" width="120" height="60" as="geometry" />
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-35" value="User uses frontEnd to control the software" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="190" y="160.9" width="80" height="29.1" as="geometry" />
         </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-27" value="Frontend Application" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="202.5" y="35" width="125" height="30" as="geometry" />
+        <mxCell id="-tvUM2E0FyoR2FPA_xmz-36" value="Speaker plays audio from the file on the local storage. Referenced by the database" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="218.8" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="fZ7_3x0WM6aSfBnPRxNX-28" value="Control Server" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="515" y="35" width="125" height="30" as="geometry" />
+        <mxCell id="jqghmaPScc8LoXAsFxhX-1" value="User" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="25" y="50" width="120" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
